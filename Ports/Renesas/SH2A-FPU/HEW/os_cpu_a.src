@@ -1,0 +1,132 @@
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
+
+;********************************************************************************************************
+;
+;                                           Renesas SH-2A-FPU
+;                           Renesas SH SERIES C/C++ Compiler (V.9.00.03.006)
+;
+; File    : os_cpu_a.src
+; Version : V3.08.00
+;********************************************************************************************************
+
+        .INCLUDE    "os_cpu_a.inc"         ; Include OS_CTX_SAVE and OS_CTX_RESTORE macros
+
+        .EXPORT     _OSStartHighRdy
+        .EXPORT     _OSCtxSw
+        .EXPORT     _OSIntCtxSw
+        .EXPORT     _OS_Get_GBR
+
+        .IMPORT     _OSRunning
+        .IMPORT     _OSPrioCur
+        .IMPORT     _OSPrioHighRdy
+        .IMPORT     _OSTCBHighRdyPtr
+        .IMPORT     _OSTaskSwHook
+        .IMPORT     _OSIntEnter
+
+
+        .SECTION    P,CODE,ALIGN=4
+
+;********************************************************************************************************
+;                                            OS_Get_GBR()
+;********************************************************************************************************
+
+_OS_Get_GBR:
+        stc.l   gbr, r0
+        rts
+        nop
+
+;********************************************************************************************************
+;                                          OSStartHighRdy()
+;********************************************************************************************************
+
+_OSStartHighRdy:
+        mov.l   #_OSTaskSwHook, r1          ; address of OSTaskSwHook function in R1
+        jsr     @r1                         ; call OSTaskSwHook()
+        nop
+
+        mov.l   #_OSTCBHighRdyPtr, r1       ; address of OSTCBHighRdyPtr in R1
+        mov.l   @r1, r2                     ; r2 is now the address of the ready task
+        mov.l   @r2, r15                    ; stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                      ; restore all processor registers from new task's stack
+
+        rte                                 ; return from interrupt
+        nop
+
+
+;********************************************************************************************************
+;                                              OSCtxSw()
+;********************************************************************************************************
+
+_OSCtxSw:
+        OS_CTX_SAVE                         ; save processor registers on the stack
+
+                                            ; save current task's stack pointer into current task's OS_TCB
+        mov.l   #_OSTCBCurPtr, r0           ; get address of OSTCBCurPtr
+        mov.l   @r0, r3                     ; R3 contains address of current TCB
+        mov.l   r15, @r3                    ; put stack pointer into it
+
+        mov.l   #_OSTaskSwHook, r2
+        jsr     @r2                         ; call OSTaskSWHook
+        nop
+
+        mov.l   #_OSTCBCurPtr,     r0       ; get address of OSTCBCurPtr
+        mov.l   #_OSTCBHighRdyPtr, r1       ; get address of OSTCBHighRdyPtr
+        mov.l   @r1, r3
+        mov.l   r3,  @r0                    ; OSTCBCurPtr = OSTCBHighRdyPtr
+
+        mov.l   #_OSPrioCur,     r0         ; get address of OSPrioCur
+        mov.l   #_OSPrioHighRdy, r2         ; get address of OSPrioHighRdy
+        mov.b   @r2, r3                     ; OSPrioCur = OSPrioHighRdy
+        mov.b   r3,  @r0
+
+        mov.l   @r1, r2                     ; r2 contains address of current TCB
+        mov.l   @r2, r15                    ; stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                      ; restore all processor registers from new task's stack
+
+        rte
+        nop
+
+
+;********************************************************************************************************
+;                                            OSIntCtxSw()
+;********************************************************************************************************
+
+_OSIntCtxSw:
+        mov.l   #_OSTaskSwHook, r2
+        jsr     @r2                         ; call OSTaskSWHook
+        nop
+
+        mov.l   #_OSPrioHighRdy, r2         ; get address of OSPrioHighRdy
+        mov.l   #_OSPrioCur, r0             ; get address of OSPrioCur
+        mov.b   @r2, r3
+        mov.b   r3, @r0                     ; OSPrioCur = OSPrioHighRdy
+
+        mov.l   #_OSTCBHighRdyPtr, r1       ; get address of OSTCBHighRdyPtr
+        mov.l   #_OSTCBCurPtr, r0           ; get address of OSTCBCurPtr
+        mov.l   @r1, r3
+        mov.l   r3, @r0                     ; OSTCBCurPtr = OSTCBHighRdyPtr
+
+        mov.l   @r3, r15                    ; CPU stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                      ; restore all processor registers from new task's stack
+
+        rte
+        nop
+
+
+        .END
+

@@ -1,0 +1,201 @@
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
+
+;********************************************************************************************************
+;
+;                                       ASSEMBLY LANGUAGE MACROS
+;
+;                                         Renesas V850E2M Port
+;
+; File      : os_cpu_a.s85
+; Version   : V3.08.00
+;********************************************************************************************************
+; For       : Renesas V850E2M
+; Toolchain : IAR EWV850 v3.7x and 3.8x
+;********************************************************************************************************
+
+                                                                ; Include macros from 'os_cpu_a.inc'
+#include "os_cpu_a.inc"
+
+;********************************************************************************************************
+;                                           PUBLIC FUNCTIONS
+;********************************************************************************************************
+                                                                ; External References
+    EXTERN  OSPrioCur
+    EXTERN  OSPrioHighRdy
+    EXTERN  OSTCBCurPtr
+    EXTERN  OSTCBHighRdyPtr
+    EXTERN  OSTaskSwHook
+    EXTERN  OSTimeTick
+                                                                ; Functions declared in this file
+    PUBLIC  OSStartHighRdy
+    PUBLIC  OSIntCtxSw
+    PUBLIC  OSCtxSw
+    PUBLIC  OS_CPU_TickHandler
+
+;********************************************************************************************************
+;                                      CODE GENERATION DIRECTIVES
+;********************************************************************************************************
+
+    RSEG CODE:CODE:NOROOT(2)
+
+;PAGE
+;********************************************************************************************************
+;                                         START MULTITASKING
+;
+; Description : This function is called by OSStart() to start the highest priority task that was created
+;               by your application before calling OSStart().
+;
+; Arguments   : none
+;
+; Note(s)     : 1) OSStartHighRdy() MUST:
+;                  a) Call OSTaskSwHook() then,
+;                  b) Switch to the highest priority task.
+;********************************************************************************************************
+
+OSStartHighRdy:
+    jarl  OSTaskSwHook, lp                                      ; Call OSTaskSwHook();
+
+    mov   OSTCBHighRdyPtr, r11                                  ; SWITCH TO HIGHEST PRIORITY TASK:
+    ld.w  0[r11]        , r11
+    ld.w  0[r11]        , sp
+
+    OS_CTX_RESTORE sp                                           ; Restore Task Context
+
+    eiret
+
+;PAGE
+;********************************************************************************************************
+;                         PERFORM A CONTEXT SWITCH (From task level) - OSCtxSw()
+;
+; Description : This function is called when a task makes a higher priority task ready-to-run.
+;
+; Note(s)     : 1) The pseudo-code for OSCtxSw() is:
+;                  a) Save the current task's context onto the current task's stack,
+;                  b) OSTCBCurPtr->StkPtr = SP;
+;                  c) OSTaskSwHook();
+;                  d) OSPrioCur           = OSPrioHighRdy;
+;                  e) OSTCBCurPtr         = OSTCBHighRdyPtr;
+;                  f) SP                  = OSTCBHighRdyPtr->StkPtr;
+;                  g) Restore the new task's context from the new task's stack,
+;                  h) Return to new task's code.
+;
+;               2) Upon entry:
+;                  OSTCBCurPtr      points to the OS_TCB of the task to suspend,
+;                  OSTCBHighRdyPtr  points to the OS_TCB of the task to resume.
+;********************************************************************************************************
+
+OSCtxSw:
+    OS_CTX_SAVE sp                                              ; Save current Task context
+
+    mov   OSTCBCurPtr, r11                                      ; OSTCBCurPtr->StkPtr = SP;
+    ld.w  0[r11]     , r11
+    st.w  sp         , 0[r11]
+
+    jarl  OSTaskSwHook, lp                                      ; OSTaskSwHook();
+
+    mov   OSPrioHighRdy, r11                                    ; OSPrioCur = OSPrioHighRdy;
+    ld.b  0[r11]       , r12
+    mov   OSPrioCur    , r11
+    st.b  r12          , 0[r11]
+
+    mov   OSTCBHighRdyPtr, r11                                  ; OSTCBCurPtr = OSTCBHighRdyPtr;
+    ld.w  0[r11]         , r12
+    mov   OSTCBCurPtr    , r11
+    st.w  r12            , 0[r11]
+
+    ld.w  0[r12], sp                                            ; SP = OSTCBHighRdyPtr->StkPtr;
+
+    OS_CTX_RESTORE sp                                           ; Restore new Task's context
+
+    eiret                                                       ; return from trap
+
+
+;PAGE
+;********************************************************************************************************
+;                     PERFORM A CONTEXT SWITCH (From interrupt level) - OSIntCtxSw()
+;
+; Description : This function is called when an ISR makes a higher priority task ready-to-run.
+;
+; Note(s)     : 1) The pseudo-code for OSIntCtxSw() is:
+;                  a) OSTaskSwHook();
+;                  b) OSPrioCur   = OSPrioHighRdy;
+;                  c) OSTCBCurPtr = OSTCBHighRdyPtr;
+;                  d) SP          = OSTCBHighRdyPtr->StkPtr;
+;                  e) Restore the new task's context from the new task's stack,
+;                  f) Return to new task's code.
+;
+;               2) Upon entry:
+;                  OSTCBCurPtr      points to the OS_TCB of the task to suspend,
+;                  OSTCBHighRdyPtr  points to the OS_TCB of the task to resume.
+;********************************************************************************************************
+
+OSIntCtxSw:
+    jarl  OSTaskSwHook, lp                                      ; OSTaskSwHook();
+
+    mov   OSPrioHighRdy, r11                                    ; OSPrioCur = OSPrioHighRdy;
+    ld.b  0[r11]       , r12
+    mov   OSPrioCur    , r11
+    st.b  r12          , 0[r11]
+
+    mov   OSTCBHighRdyPtr, r11                                  ; OSTCBCurPtr = OSTCBHighRdyPtr;
+    ld.w  0[r11]         , r12
+    mov   OSTCBCurPtr    , r11
+    st.w  r12            , 0[r11]
+
+    ld.w  0[r12], sp                                            ; SP = OSTCBHighRdyPtr->StkPtr;
+
+    OS_CTX_RESTORE sp                                           ; Restore new Task's context
+
+    eiret                                                       ; Return from interrupt starts new task
+
+;PAGE
+;********************************************************************************************************
+;                                        OS_CPU_TickHandler
+;
+; Note(s) : 1) The pseudo-code for _OS_CPU_TickHandler() is:
+;              a) Save processor registers;
+;              b) Increment OSIntNestingCtr;
+;              c) if (OSIntNestingCtr == 1) {
+;                     OSTCBCurPtr->StkPtr = SP;
+;                 }
+;              d) Call OSTimeTick();
+;              e) Call OSIntExit();
+;              f) Restore processosr Registers;
+;
+;           2) OS_CPU_TickHandler() must be registered in the proper vector address of timer that will be
+;              used as the tick.
+;
+;           3) All the other ISRs must have the following implementation to secure proper register saving &
+;              restoring when servicing an interrupt
+;
+;              MyISR
+;                  OS_ISR_ENTER
+;                  ISR Body here
+;                  OS_ISR_EXIT
+;********************************************************************************************************
+
+OS_CPU_TickHandler:
+    OS_ISR_ENTER
+
+    jarl OSTimeTick, lp                                         ; Call OSTimeTick();
+
+    OS_ISR_EXIT
+
+;$PAGE
+;********************************************************************************************************
+;                                     ASSEMBLY LANGUAGE PORT FILE END
+;********************************************************************************************************
+
+    END

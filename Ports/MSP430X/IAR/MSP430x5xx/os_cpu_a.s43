@@ -1,0 +1,269 @@
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
+
+;********************************************************************************************************
+;
+;                                              TI MSP430X
+;                                              MSP430x5xx
+;
+; File    : os_cpu.h
+; Version : V3.08.00
+;********************************************************************************************************
+
+#include   <msp430x54x.h>
+
+;********************************************************************************************************
+;                                  PUBLIC AND EXTERNAL DECLARATIONS
+;********************************************************************************************************
+
+    EXTERN  OSIntExit
+    EXTERN  OSIntNestingCtr
+
+    EXTERN  OSISRStk
+
+    EXTERN  OSPrioCur
+    EXTERN  OSPrioHighRdy
+
+    EXTERN  OSTCBCurPtr
+    EXTERN  OSTCBHighRdyPtr
+
+    EXTERN  OSTaskSwHook
+    EXTERN  OSTimeTick
+
+    PUBLIC  OSCtxSw
+    PUBLIC  OSCPURestoreSR
+    PUBLIC  OSCPUSaveSR
+    PUBLIC  OSIntCtxSw
+    PUBLIC  OSStartHighRdy
+    PUBLIC  WDT_ISR
+
+;********************************************************************************************************
+;                                  START HIGHEST PRIORITY READY TASK
+;
+; Description: This function is called by OSStart() to start the highest priority task that is ready to run.
+;
+; Note       : OSStartHighRdy() MUST:
+;                 a) Call OSTaskSwHook() then,
+;                 b) Switch to the highest priority task.
+;********************************************************************************************************
+
+    RSEG        CODE                    ; Program code
+
+OSStartHighRdy
+    CALLA       #OSTaskSwHook
+
+    MOVX.A      &OSTCBHighRdyPtr, R13      ; load highest ready task stack
+    MOVX.A      @R13, SP
+
+    POPM.A      #12, R15
+
+    RETI                                ; emulate return from interrupt
+
+
+;********************************************************************************************************
+;                                     TASK LEVEL CONTEXT SWITCH
+;
+; Description: This function is called by OS_Sched() to perform a task level context switch.
+;
+; Note       : OSCtxSw() MUST:
+;                 a) Save the current task's registers onto the current task stack
+;                 b) Save the SP into the current task's OS_TCB
+;                 c) Call OSTaskSwHook()
+;                 d) Copy OSPrioHighRdy to OSPrioCur
+;                 e) Copy OSTCBHighRdyPtr to OSTCBCurPtr
+;                 f) Load the SP with OSTCBHighRdyPtr->StkPtr
+;                 g) Restore all the registers from the high priority task stack
+;                 h) Perform a return from interrupt
+;********************************************************************************************************
+
+OSCtxSw
+    POP.W       R12                     ; Pop lower 16 bits of PC.
+    POP.W       R13                     ; Pop upper  4 bits of PC.
+
+    PUSH.W      R12                     ; Save lower 16 bits of PC.
+
+    RLAM.A      #4, R13                 ; Save SR + upper 4 bits of PC.
+    RLAM.A      #4, R13
+    RLAM.A      #4, R13
+    MOVX.W      SR,  R12
+    ADDX.A      R13, R12
+    PUSH.W      R12
+
+    PUSHM.A     #12, R15                ; Save R4-R15.
+
+    MOVX.A      &OSTCBCurPtr, R13       ; OSTCBCurPtr->StkPtr = SP
+    MOVX.A      SP, 0(R13)
+
+    CALLA       #OSTaskSwHook
+
+    MOV.B       &OSPrioHighRdy, R13     ; OSPrioCur = OSPrioHighRdy
+    MOV.B       R13, &OSPrioCur
+
+    MOVX.A      &OSTCBHighRdyPtr, R13   ; OSTCBCurPtr  = OSTCBHighRdyPtr
+    MOVX.A      R13, &OSTCBCurPtr
+
+    MOVX.A      @R13, SP                ; SP        = OSTCBHighRdyPtr->StkPtr
+
+    POPM.A      #12, R15                ; Restore R4-R15.
+
+    RETI                                ; Return from interrupt.
+
+
+;********************************************************************************************************
+;                                       ISR LEVEL CONTEXT SWITCH
+;
+; Description: This function is called by OSIntExit() to perform an ISR level context switch.
+;
+; Note       : OSIntCtxSw() MUST:
+;                 a) Call OSTaskSwHook()
+;                 b) Copy OSPrioHighRdy to OSPrioCur
+;                 c) Copy OSTCBHighRdyPtr to OSTCBCurPtr
+;                 d) Load the SP with OSTCBHighRdyPtr->StkPtr
+;                 e) Restore all the registers from the high priority task stack
+;                 f) Perform a return from interrupt
+;********************************************************************************************************
+
+OSIntCtxSw
+    CALLA       #OSTaskSwHook
+
+    MOV.B       &OSPrioHighRdy, R13     ; OSPrioCur = OSPrioHighRdy
+    MOV.B       R13, &OSPrioCur
+
+    MOVX.A      &OSTCBHighRdyPtr, R13   ; OSTCBCurPtr  = OSTCBHighRdyPtr
+    MOVX.A      R13, &OSTCBCurPtr
+
+    MOVX.A      @R13, SP                ; SP = OSTCBHighRdyPtr->StkPtr
+
+    POPM.A      #12, R15
+
+    RETI                                ; return from interrup
+
+
+;********************************************************************************************************
+;                                              TICK ISR
+;
+; Description: This ISR handles tick interrupts.  This ISR uses the Watchdog timer as the tick source.
+;
+; Notes      : 1) The following C pseudo-code describes the operations being performed in the code below.
+;
+;                 Save all the CPU registers
+;                 if (OSIntNestingCtr == 0) {
+;                     OSTCBCurPtr->StkPtr  = SP;
+;                     SP                    = OSISRStk;     /* Use the ISR stack from now on           */
+;                 }
+;                 OSIntNestingCtr++;
+;                 Enable interrupt nesting;                 /* Allow nesting of interrupts (if needed) */
+;                 Clear the interrupt source;
+;                 OSTimeTick();                             /* Call uC/OS-III's tick handler           */
+;                 DISABLE general interrupts;               /* Must DI before calling OSIntExit()      */
+;                 OSIntExit();
+;                 if (OSIntNestingCtr == 0) {
+;                     SP = OSTCBHighRdyPtr->StkPtr;         /* Restore the current task's stack        */
+;                 }
+;                 Restore the CPU registers
+;                 Return from interrupt.
+;
+;              2) ALL ISRs should be written like this!
+;
+;              3) You MUST disable general interrupts BEFORE you call OSIntExit() because an interrupt
+;                 COULD occur just as OSIntExit() returns and thus, the new ISR would save the SP of
+;                 the ISR stack and NOT the SP of the task stack.  This of course will most likely cause
+;                 the code to crash.  By disabling interrupts BEFORE OSIntExit(), interrupts would be
+;                 disabled when OSIntExit() would return.
+;
+;              4) If you DON'T use a separate ISR stack then you don't need to disable general interrupts
+;                 just before calling OSIntExit().  The pseudo-code for an ISR would thus look like this:
+;
+;                 Save all the CPU registers
+;                 if (OSIntNestingCtr == 0) {
+;                     OSTCBCurPtr->StkPtr = SP;
+;                 }
+;                 OSIntNestingCtr++;
+;                 Enable interrupt nesting;                 /* Allow nesting of interrupts (if needed) */
+;                 Clear the interrupt source;
+;                 OSTimeTick();                             /* Call uC/OS-III's tick handler            */
+;                 OSIntExit();
+;                 Restore the CPU registers
+;                 Return from interrupt.
+;********************************************************************************************************
+
+WDT_ISR                                 ; wd timer ISR
+    PUSHM.A     #12, R15
+
+    BIC.W       #0x01, SFRIE1           ; disable wd timer interrupt
+
+    CMP.B       #0, &OSIntNestingCtr    ; if (OSIntNestingCtr == 0)
+    JNE         WDT_ISR_1
+
+    MOVX.A      &OSTCBCurPtr, R13       ;     save task stack
+    MOVX.A      SP, 0(R13)
+
+    MOVX.A      &OSISRStk, SP           ;     load interrupt stack
+
+WDT_ISR_1
+    INC.B       &OSIntNestingCtr        ; increase OSIntNesting
+
+    BIS.W       #0x01, SFRIE1           ; enable wd timer interrupt
+
+    EINT                                ; enable general interrupt to allow for interrupt nesting
+
+    CALLA       #OSTimeTick             ; call ticks routine
+
+    DINT                                ; IMPORTANT: disable general interrupt BEFORE calling OSIntExit()
+
+    CALLA       #OSIntExit
+
+    CMP.B       #0, &OSIntNestingCtr    ; if (OSIntNestingCtr == 0)
+    JNE         WDT_ISR_2
+
+    MOVX.A      &OSTCBHighRdyPtr, R13   ; restore task stack SP
+    MOVX.A      @R13, SP
+
+WDT_ISR_2
+    POPM.A      #12, R15
+
+    RETI                                ; return from interrupt
+
+
+;********************************************************************************************************
+;                             SAVE AND RESTORE THE CPU'S STATUS REGISTER
+;
+; Description: These functions are used to implement critical sections by saving the status register
+;              in a local variable of the calling function and then, disables interrupts.
+;
+; Notes      : R12 is assumed to hold the argument passed to OSCPUSaveSR() and also, the value returned
+;              by OSCPURestoreSR().
+;********************************************************************************************************
+
+OSCPUSaveSR
+    MOV.W       SR, R12
+    DINT
+    RETA
+
+
+OSCPURestoreSR
+    MOV.W       R12, SR
+    RETA
+
+;********************************************************************************************************
+;                                 WD TIMER INTERRUPT VECTOR ENTRY
+;
+; Interrupt vectors
+;********************************************************************************************************
+    COMMON      INTVEC
+
+    ORG         WDT_VECTOR
+WDT_VEC   DW    WDT_ISR                 ; interrupt vector. Watchdog/Timer, Timer mode
+
+    END

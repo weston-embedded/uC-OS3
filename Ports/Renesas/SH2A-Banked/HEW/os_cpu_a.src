@@ -1,0 +1,202 @@
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
+
+;********************************************************************************************************
+;
+;                                             Renesas SH2A
+;                           Renesas SH SERIES C/C++ Compiler (V.9.00.03.006)
+;
+; File    : os_cpu_a.src
+; Version : V3.08.00
+;********************************************************************************************************
+
+        .INCLUDE    "os_cpu_a.inc"         ; Include macros
+
+        .EXPORT     _OS_Get_GBR
+        .EXPORT     _OS_C_ISR_Save
+        .EXPORT     _OS_C_ISR_Restore
+        .EXPORT     _OSStartHighRdy
+        .EXPORT     _OSCtxSw
+        .EXPORT     _OSIntCtxSw
+        .EXPORT     _OSTickISR
+
+        .IMPORT     _OSRunning
+        .IMPORT     _OSPrioCur
+        .IMPORT     _OSPrioHighRdy
+        .IMPORT     _OSTCBCurPtr
+        .IMPORT     _OSTCBHighRdyPtr
+        .IMPORT     _OSIntNestingCtr
+        .IMPORT     _OSIntExit
+        .IMPORT     _OSTaskSwHook
+        .IMPORT     _OSIntEnter
+        .IMPORT     _OSTimeTick
+        .IMPORT     _Tmr_TickClr
+
+
+        .SECTION    P,CODE,ALIGN=4
+
+;********************************************************************************************************
+;                                           OS_Get_GBR()
+;********************************************************************************************************
+
+_OS_Get_GBR:
+         STC.L     GBR, R0
+         RTS
+         NOP
+
+;********************************************************************************************************
+;                                         OS_C_ISR_Save()
+;********************************************************************************************************
+
+_OS_C_ISR_Save:
+         OS_C_ISR_SAVE
+         RTS
+         NOP
+
+;********************************************************************************************************
+;                                       OS_C_ISR_Restore()
+;********************************************************************************************************
+
+_OS_C_ISR_Restore:
+         OS_C_ISR_RESTORE
+         RTS
+         NOP
+
+;********************************************************************************************************
+;                                            OSStartHighRdy()
+;********************************************************************************************************
+
+_OSStartHighRdy:
+        MOV.L       #_OSTaskSwHook, R1          ; address of OSTaskSwHook function in R1
+        JSR/N       @R1                         ; call OSTaskSwHook()
+
+        MOV.L       #_OSTCBHighRdyPtr, R1       ; address of OSTCBHighRdyPtr in R1
+        MOV.L       @R1, R2                     ; r2 is now the address of the ready task
+        MOV.L       @R2, R15                    ; stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                          ; restore all processor registers from new task's stack
+
+        RTE                                     ; return from interrupt
+        NOP
+
+
+;********************************************************************************************************
+;                                              OSCtxSw()
+;********************************************************************************************************
+
+_OSCtxSw:
+
+        OS_CTX_SAVE                             ; save processor registers on the stack
+
+                                                ; save current task's stack pointer into current task's OS_TCB
+        MOV.L       #_OSTCBCurPtr, R0           ; get address of OSTCBCurPtr
+        MOV.L       @R0, R3                     ; R3 contains address of current TCB
+        MOV.L       R15, @R3                    ; put stack pointer into it
+
+        MOV.L       #_OSTaskSwHook, R2
+        JSR/N       @R2                         ; call OSTaskSWHook
+
+        MOV.L       #_OSTCBCurPtr,     R0       ; get address of OSTCBCurPtr
+        MOV.L       #_OSTCBHighRdyPtr, R1       ; get address of OSTCBHighRdyPtr
+        MOV.L       @R1, R3
+        MOV.L       R3,  @R0                    ; OSTCBCurPtr = OSTCBHighRdyPtr
+
+        MOV.L       #_OSPrioCur,     R0         ; get address of OSPrioCur
+        MOV.L       #_OSPrioHighRdy, R2         ; get address of OSPrioHighRdy
+        MOV.B       @R2, R3                     ; OSPrioCur = OSPrioHighRdy
+        MOV.B       R3,  @R0
+
+        MOV.L       @R1, R2                     ; r2 contains address of current TCB
+        MOV.L       @R2, R15                    ; stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                          ; restore all processor registers from new task's stack
+
+        RTE
+        NOP
+
+
+;********************************************************************************************************
+;                                            OSIntCtxSw()
+;********************************************************************************************************
+_OSIntCtxSw:
+                                                ; build the stack contents (from register bank)
+        ADD         #8, R15                     ; Adjust stack point, 2 CPU_STK entries
+
+                                                ; save RESBANK information to current task's stack
+        RESBANK                                 ; restore resbank information to registers in 6 cycles, and IBNR.BN--
+
+        STC.L       GBR,  @-R15                 ; Save GBR
+        STS.L       PR,   @-R15                 ; Save PR
+
+        STS.L       MACL, @-R15                 ; Save DSP registers
+        STS.L       MACH, @-R15
+
+        MOVML.L     R14,  @-R15                 ; Save Integer Registers
+
+        MOV.L       #_OSTCBCurPtr, R1           ; save current task's SP into its TCB
+        MOV.L       @R1,  R0
+        MOV         R15,  @R0
+
+
+        MOV.L       #_OSTaskSwHook, R2
+        JSR/N       @R2                         ; call OSTaskSWHook
+
+        MOV.L       #_OSPrioHighRdy, R2         ; get address of OSPrioHighRdy
+        MOV.L       #_OSPrioCur, R0             ; get address of OSPrioCur
+        MOV.B       @R2, R3
+        MOV.B       R3,  @R0                    ; OSPrioCur = OSPrioHighRdy
+
+        MOV.L       #_OSTCBHighRdyPtr, R1       ; get address of OSTCBHighRdyPtr
+        MOV.L       #_OSTCBCurPtr, R0           ; get address of OSTCBCurPtr
+        MOV.L       @R1, R3
+        MOV.L       R3,  @R0                    ; OSTCBCurPtr = OSTCBHighRdyPtr
+
+        MOV.L       @R3, R15                    ; CPU stack pointer = OSTCBHighRdyPtr->OSTCBStkPtr
+
+        OS_CTX_RESTORE                          ; restore all processor registers from new task's stack, to registers directly
+
+        RTE
+        NOP
+
+
+;********************************************************************************************************
+;                                             OSTickISR()
+;********************************************************************************************************
+
+_OSTickISR:
+
+        OS_CTX_SAVE_ISR
+
+        MOV.L       #_OSIntNestingCtr, R1       ; OSIntNestingCtr = IBNR.BN
+        MOVI20      #H'E080E, R3
+        MOV.W       @R3, R2
+        MOV.B       R2,  @R1
+
+        MOV.L       #_Tmr_TickClr, R3           ; clear timer interrupt source
+        JSR/N       @R3
+
+        MOV.L       #_OSTimeTick, R0
+        JSR/N       @R0                         ; call OSTimeTick()
+
+        MOV.L       #_OSIntExit, R0
+        JSR/N       @R0                         ; call OSIntExit()
+
+        OS_CTX_RESTORE_ISR                      ; restore all processor registers from stack
+        RESBANK
+
+        RTE
+        NOP
+
+        .END
+

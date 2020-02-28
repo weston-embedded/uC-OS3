@@ -1,0 +1,278 @@
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
+
+;********************************************************************************************************
+;
+;                                         ATMEL AVR Xmega Port
+;
+; File    : os_cpu_a.s90
+; Version : V3.08.00
+;********************************************************************************************************
+
+;********************************************************************************************************
+;                                             ASM HEADER
+;********************************************************************************************************
+
+#include  <os_cpu_i.s90>
+
+        MODULE  OS_CPU_A
+
+        RSEG    FARCODE:CODE:NOROOT(1)
+
+
+;$PAGE
+;********************************************************************************************************
+;                                         PUBLIC DECLARATIONS
+;********************************************************************************************************
+
+        PUBLIC  OSStartHighRdy
+        PUBLIC  OSCtxSw
+        PUBLIC  OSIntCtxSw
+
+        EXTERN  OSIntExit
+        EXTERN  OSIntNestingCtr
+        EXTERN  OSPrioCur
+        EXTERN  OSPrioHighRdy
+        EXTERN  OSTaskSwHook
+        EXTERN  OSTCBCurPtr
+        EXTERN  OSTCBHighRdyPtr
+
+
+;$PAGE
+;********************************************************************************************************
+;                              START HIGHEST PRIORITY TASK READY-TO-RUN
+;
+; Description : This function is called by OSStart() to start the highest priority task that was created
+;               by your application before calling OSStart().
+;
+; Note(s)     : 1) The (data)stack frame is assumed to look as follows:
+;
+;                                                          Hardware Stack points to EMPTY
+;                                                          <----------------------------\
+;                                                   PC (H)                              |
+;                                                   PC (M)                              |
+;                                                   PC (L)                              |
+;                                                                                       |
+;                                                                                       |
+;                  OSTCBHighRdyPtr->OSTCBStkPtr --> SPL of (return) stack pointer   ----/   (Low memory)
+;                                                   SPH of (return) stack pointer
+;                                                   Flags to load in status register
+;                                                   EIND
+;                                                   RAMPZ
+;                                                   RAMPX
+;                                                   RAMPD
+;                                                   R31
+;                                                   R30
+;                                                   R27
+;                                                   .
+;                                                   .
+;                                                   R0                                      (High memory)
+;
+;                  where the stack pointer points to the task start address.
+;
+;
+;               2) OSStartHighRdy() MUST:
+;                      a) Call OSTaskSwHook() then,
+;                      b) Switch to the highest priority task.
+;********************************************************************************************************
+
+OSStartHighRdy:
+        CALL    OSTaskSwHook                                    ; Invoke user defined context switch hook
+
+        LDS     R30,OSTCBHighRdyPtr                             ; Let Z point to TCB of highest priority task
+        LDS     R31,OSTCBHighRdyPtr+1                           ; ready to run
+        LD      R28,Z+                                          ; Load Y (R29:R28) pointer
+        LD      R29,Z+                                          ;
+
+        POP_SP                                                  ; Restore stack pointer
+        POP_SREG_INT                                            ; Restore status register (DISABLE interrupts)
+        POP_ALL                                                 ; Restore all registers
+        SEI                                                     ; Enable interrupts, since RETI does not on Xmega
+        RETI
+
+
+;$PAGE
+;********************************************************************************************************
+;                                      TASK LEVEL CONTEXT SWITCH
+;
+; Description : This function is called when a task makes a higher priority task ready-to-run.
+;
+; Note(s)     : 1) Upon entry,
+;                  OSTCBCurPtr     points to the OS_TCB of the task to suspend
+;                  OSTCBHighRdyPtr points to the OS_TCB of the task to resume
+;
+;               2) The stack frame of the task to suspend looks as follows:
+;
+;                                          SP+0 --> LSB of task code address
+;                                            +1     MSB of task code address                (High memory)
+;
+;               3) The saved context of the task to resume looks as follows:
+;
+;                                                          Hardware Stack points to EMPTY
+;                                                          <----------------------------\
+;                                                   PC (H)                              |
+;                                                   PC (M)                              |
+;                                                   PC (L)                              |
+;                                                                                       |
+;                                                                                       |
+;                  OSTCBHighRdyPtr->OSTCBStkPtr --> SPL of (return) stack pointer   ----/   (Low memory)
+;                                                   SPH of (return) stack pointer
+;                                                   Flags to load in status register
+;                                                   EIND
+;                                                   RAMPZ
+;                                                   RAMPX
+;                                                   RAMPD
+;                                                   R31
+;                                                   R30
+;                                                   R27
+;                                                   .
+;                                                   .
+;                                                   R0                                      (High memory)
+;********************************************************************************************************
+
+OSCtxSw:
+        PUSH_ALL                                                ; Save current task's context
+        PUSH_SREG
+        PUSH_SP
+
+        LDS     R30,OSTCBCurPtr                                 ; Z = OSTCBCurPtr->OSTCBStkPtr
+        LDS     R31,OSTCBCurPtr+1                               ;
+        ST      Z+,R28                                          ; Save Y (R29:R28) pointer
+        ST      Z+,R29                                          ;
+
+        CALL    OSTaskSwHook                                    ; Call user defined task switch hook
+
+        LDS     R16,OSPrioHighRdy                               ; OSPrioCur = OSPrioHighRdy
+        STS     OSPrioCur,R16
+
+        LDS     R30,OSTCBHighRdyPtr                             ; Let Z point to TCB of highest priority task
+        LDS     R31,OSTCBHighRdyPtr+1                           ; ready to run
+        STS     OSTCBCurPtr,R30                                 ; OSTCBCurPtr = OSTCBHighRdyPtr
+        STS     OSTCBCurPtr+1,R31                               ;
+
+        LD      R28,Z+                                          ; Restore Y pointer
+        LD      R29,Z+                                          ;
+
+        POP_SP                                                  ; Restore stack pointer
+        LD      R16,Y+                                          ; Restore status register
+        SBRC    R16,7                                           ; Skip next instruction in interrupts DISABLED
+        RJMP    OSCtxSw_1
+
+        OUT     SREG,R16                                        ; Interrupts of task to return to are DISABLED
+        POP_ALL
+        RET
+
+OSCtxSw_1:
+        CBR     R16,BIT07                                       ; Interrupts of task to return to are ENABLED
+        OUT     SREG,R16
+        POP_ALL                                                 ; Restore all registers
+        SEI                                                     ; Enable interrupts, since RETI does not on Xmega
+        RET
+
+
+;$PAGE
+;********************************************************************************************************
+;                                   INTERRUPT LEVEL CONTEXT SWITCH
+;
+; Description : This function is called by OSIntExit() to perform a context switch to a task that has
+;               been made ready-to-run by an ISR.
+;
+; Note(s)     : 1) Upon entry,
+;                  OSTCBCurPtr     points to the OS_TCB of the task to suspend
+;                  OSTCBHighRdyPtr points to the OS_TCB of the task to resume
+;
+;               2) The stack frame of the task to suspend looks as follows:
+;
+;                                                          Hardware Stack points to EMPTY
+;                                                          <----------------------------\
+;                                                   PC (H)                              |
+;                                                   PC (M)                              |
+;                                                   PC (L)                              |
+;                                                                                       |
+;                                                                                       |
+;                  OSTCBCurPtr->OSTCBStkPtr ------> SPL of (return) stack pointer    ---/   (Low memory)
+;                                                   SPH of (return) stack pointer
+;                                                   Flags to load in status register
+;                                                   EIND
+;                                                   RAMPZ
+;                                                   RAMPX
+;                                                   RAMPD
+;                                                   R31
+;                                                   R30
+;                                                   R27
+;                                                   .
+;                                                   .
+;                                                   R0                                      (High memory)
+;
+;               3) The saved context of the task to resume looks as follows:
+;
+;                                                          Hardware Stack points to EMPTY
+;                                                          <----------------------------\
+;                                                   PC (H)                              |
+;                                                   PC (M)                              |
+;                                                   PC (L)                              |
+;                                                                                       |
+;                                                                                       |
+;                  OSTCBHighRdyPtr->OSTCBStkPtr --> SPL of (return) stack pointer    ---/   (Low memory)
+;                                                   SPH of (return) stack pointer
+;                                                   Flags to load in status register
+;                                                   EIND
+;                                                   RAMPZ
+;                                                   RAMPX
+;                                                   RAMPD
+;                                                   R31
+;                                                   R30
+;                                                   R27
+;                                                   .
+;                                                   .
+;                                                   R0                                      (High memory)
+;********************************************************************************************************
+
+OSIntCtxSw:
+        CALL    OSTaskSwHook                                    ; Call user defined task switch hook
+
+        LDS     R16,OSPrioHighRdy                               ; OSPrioCur = OSPrioHighRdy
+        STS     OSPrioCur,R16
+
+        LDS     R30,OSTCBHighRdyPtr                             ; Let Z point to TCB of highest priority task
+        LDS     R31,OSTCBHighRdyPtr+1                           ; ready to run
+        STS     OSTCBCurPtr,R30                                 ; OSTCBCurPtr = OSTCBHighRdyPtr
+        STS     OSTCBCurPtr+1,R31                               ;
+
+        LD      R28,Z+                                          ; Restore Y pointer
+        LD      R29,Z+                                          ;
+
+        POP_SP                                                  ; Restore stack pointer
+        LD      R16,Y+                                          ; Restore status register
+        SBRC    R16,7                                           ; Skip next instruction in interrupts DISABLED
+        RJMP    OSIntCtxSw_1
+
+        OUT     SREG,R16                                        ; Interrupts of task to return to are DISABLED
+        POP_ALL
+        RETI
+
+OSIntCtxSw_1:
+        CBR     R16,BIT07                                       ; Interrupts of task to return to are ENABLED
+        OUT     SREG,R16
+        POP_ALL                                                 ; Restore all registers
+        SEI                                                     ; Enable interrupts, since RETI does not on Xmega
+        RETI
+
+
+;$PAGE
+;********************************************************************************************************
+;                                     OS_CPU ASSEMBLY PORT FILE END
+;********************************************************************************************************
+
+                END
