@@ -43,7 +43,7 @@ const  CPU_CHAR  *os_tls__c = "$Id: $";
 
 
 #if     (_DLIB_FILE_DESCRIPTOR > 0) && (_FILE_OP_LOCKS > 0)
-#define  OS_TLS_LOCK_MAX              ((_MAX_LOCK) + (FOPEN_MAX))	      /* _MAX_LOCK and _FOPEN_MAX defined by IAR  */
+#define  OS_TLS_LOCK_MAX              ((_MAX_LOCK) + (FOPEN_MAX))       /* _MAX_LOCK and _FOPEN_MAX defined by IAR  */
 #else
 #define  OS_TLS_LOCK_MAX               (_MAX_LOCK)
 #endif
@@ -124,8 +124,8 @@ OS_TLS_ID  OS_TLS_GetID (OS_ERR  *p_err)
         return ((OS_TLS_ID)OS_CFG_TLS_TBL_SIZE);
     }
 
-    id    = OS_TLS_NextAvailID;									  /* Assign the next available ID                     */
-    OS_TLS_NextAvailID++;										  /* Increment available ID for next request          */
+    id    = OS_TLS_NextAvailID;                   /* Assign the next available ID                     */
+    OS_TLS_NextAvailID++;                     /* Increment available ID for next request          */
     CPU_CRITICAL_EXIT();
    *p_err = OS_ERR_NONE;
     return (id);
@@ -400,7 +400,7 @@ void  OS_TLS_TaskCreate (OS_TCB  *p_tcb)
 
 
     if ((p_tcb->Opt & OS_OPT_TASK_NO_TLS) == OS_OPT_NONE) {       /* See if TLS is available for this task            */
-	                                                              /* Get TLS segment from the HEAP.                   */
+                                                                /* Get TLS segment from the HEAP.                   */
         p_tls                        = (OS_TLS)__iar_dlib_perthread_allocate();
         __iar_dlib_perthread_initialize(p_tls);                   /* Initialize the TLS segment.                      */
         p_tcb->TLS_Tbl[OS_TLS_LibID] = p_tls;                     /* Set the TLS segment pointer in the task.         */
@@ -493,25 +493,29 @@ static  void  OS_TLS_LockCreate (void  **p_lock)
         return;
     }
 
+    CPU_CRITICAL_ENTER();
     if (OS_TLS_LockPoolListPtr == (OS_TLS_LOCK *)0) {             /* If 'OS_TLS_LOCK' object pool is empty?           */
+        CPU_CRITICAL_EXIT();
         *p_lock = (void *)0;                                      /*   return a 'NULL' pointer.                       */
         return;
     }
-
     p_tls_lock = OS_TLS_LockPoolListPtr;                          /* Get the first object in the list.                */
+    OS_TLS_LockPoolListPtr = p_tls_lock->NextPtr;                 /* Move HEAD pointer to the next object in the list.*/
+    CPU_CRITICAL_EXIT();
 
     OSMutexCreate((OS_MUTEX *)&p_tls_lock->Mutex,                 /* Create the mutex in the kernel.                  */
                   (CPU_CHAR *) 0,
                   (OS_ERR   *)&err);
 
     if (err != OS_ERR_NONE) {                                     /* If the mutex create funtion fail?                */
+        CPU_CRITICAL_ENTER();
+                                                                  /* Return the OS_TLS_LOCK in front of the list      */
+        p_tls_lock->NextPtr = OS_TLS_LockPoolListPtr;
+        OS_TLS_LockPoolListPtr = p_tls_lock;
+        CPU_CRITICAL_EXIT();
         *p_lock = (void *)0;                                      /* ... return a 'NULL' pointer.                     */
          return;
     }
-
-    CPU_CRITICAL_ENTER();
-    OS_TLS_LockPoolListPtr = p_tls_lock->NextPtr;                 /* Move HEAD pointer to the next object in the list.*/
-    CPU_CRITICAL_EXIT();
 
     *p_lock = (void *)p_tls_lock;                                 /* Return the new 'OS_TLS_LOCK' object pointer.     */
 }
@@ -551,11 +555,7 @@ static  void  OS_TLS_LockDel (void  *p_lock)
 
     CPU_CRITICAL_ENTER();
                                                                   /* Return the OS_TLS_LOCK in front of the list      */
-    if (OS_TLS_LockPoolListPtr == (OS_TLS_LOCK *)0) {
-        p_tls_lock->NextPtr  = (OS_TLS_LOCK *)0;
-    } else {
-        p_tls_lock->NextPtr = OS_TLS_LockPoolListPtr;
-    }
+    p_tls_lock->NextPtr = OS_TLS_LockPoolListPtr;
     OS_TLS_LockPoolListPtr = p_tls_lock;
 
     CPU_CRITICAL_EXIT();
