@@ -493,25 +493,31 @@ static  void  OS_TLS_LockCreate (void  **p_lock)
         return;
     }
 
+    CPU_CRITICAL_ENTER();
     if (OS_TLS_LockPoolListPtr == (OS_TLS_LOCK *)0) {             /* If 'OS_TLS_LOCK' object pool is empty?           */
+        CPU_CRITICAL_EXIT();
         *p_lock = (void *)0;                                      /*   return a 'NULL' pointer.                       */
         return;
     }
 
-    p_tls_lock = OS_TLS_LockPoolListPtr;                          /* Get the first object in the list.                */
+    p_tls_lock 			   = OS_TLS_LockPoolListPtr;              /* Get the first object in the list.                */
+    OS_TLS_LockPoolListPtr = p_tls_lock->NextPtr;                 /* Move HEAD pointer to the next object in the list.*/
+    CPU_CRITICAL_EXIT();
 
     OSMutexCreate((OS_MUTEX *)&p_tls_lock->Mutex,                 /* Create the mutex in the kernel.                  */
                   (CPU_CHAR *) 0,
                   (OS_ERR   *)&err);
 
     if (err != OS_ERR_NONE) {                                     /* If the mutex create funtion fail?                */
+        CPU_CRITICAL_ENTER();
+                                                                  /* Return the OS_TLS_LOCK in front of the list      */
+        p_tls_lock->NextPtr    = OS_TLS_LockPoolListPtr;
+        OS_TLS_LockPoolListPtr = p_tls_lock;
+        CPU_CRITICAL_EXIT();
+		
         *p_lock = (void *)0;                                      /* ... return a 'NULL' pointer.                     */
          return;
     }
-
-    CPU_CRITICAL_ENTER();
-    OS_TLS_LockPoolListPtr = p_tls_lock->NextPtr;                 /* Move HEAD pointer to the next object in the list.*/
-    CPU_CRITICAL_EXIT();
 
     *p_lock = (void *)p_tls_lock;                                 /* Return the new 'OS_TLS_LOCK' object pointer.     */
 }
@@ -551,11 +557,7 @@ static  void  OS_TLS_LockDel (void  *p_lock)
 
     CPU_CRITICAL_ENTER();
                                                                   /* Return the OS_TLS_LOCK in front of the list      */
-    if (OS_TLS_LockPoolListPtr == (OS_TLS_LOCK *)0) {
-        p_tls_lock->NextPtr  = (OS_TLS_LOCK *)0;
-    } else {
-        p_tls_lock->NextPtr = OS_TLS_LockPoolListPtr;
-    }
+    p_tls_lock->NextPtr    = OS_TLS_LockPoolListPtr;
     OS_TLS_LockPoolListPtr = p_tls_lock;
 
     CPU_CRITICAL_EXIT();
