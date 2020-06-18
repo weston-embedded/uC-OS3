@@ -58,9 +58,9 @@
         .text
 
 /*********************************************************************************************************
- *                                PERFORM A CONTEXT SWITCH
- *                                           void OSCtxSw(void)    - from task level
- *                                           void OSIntCtxSw(void) - from interrupt level
+ *                                     PERFORM A CONTEXT SWITCH
+ *                              void OSCtxSw(void) - from task level
+ *                           void OSIntCtxSw(void) - from interrupt level
  *
  * Note(s): 1) Upon entry,
  *             OSTCBCurPtr      points to the OS_TCB of the task to suspend

@@ -83,15 +83,15 @@ void  OSInitHook (void)
 
 
 /*
-*********************************************************************************************************
-*                                           REDZONE HIT HOOK
+************************************************************************************************************************
+*                                                  REDZONE HIT HOOK
 *
 * Description: This function is called when a task's stack overflowed.
 *
 * Arguments  : p_tcb        Pointer to the task control block of the offending task. NULL if ISR.
 *
 * Note(s)    : None.
-*********************************************************************************************************
+************************************************************************************************************************
 */
 #if (OS_CFG_TASK_STK_REDZONE_EN > 0u)
 void  OSRedzoneHitHook (OS_TCB  *p_tcb)
@@ -212,6 +212,8 @@ void  OSTaskReturnHook (OS_TCB  *p_tcb)
 *
 *              p_arg         is a pointer to a user supplied data area that will be passed to the task when the task
 *                            first executes.
+*
+*              p_stk_limit   is a pointer to the stack limit address. It is not used for this port.
 *
 *              p_stk_base    is a pointer to the base address of the stack.
 *
