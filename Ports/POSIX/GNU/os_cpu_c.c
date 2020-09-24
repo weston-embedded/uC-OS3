@@ -26,9 +26,15 @@
 *********************************************************************************************************
 */
 
+/* 1U: sigaddset, sigemptyset, sigset_t
+ * 199506UL: sigwait
+ */
+#define _POSIX_C_SOURCE 199506UL
+
+/* syscall */
+#define _GNU_SOURCE
 
 #define   OS_CPU_GLOBALS
-#define  _GNU_SOURCE
 
 #ifdef VSC_INCLUDE_SOURCE_FILE_NAMES
 const  CPU_CHAR  *os_cpu_c__c = "$Id: $";
@@ -106,7 +112,7 @@ static  void       *OSTaskPosix           (void       *p_arg);
 static  void        OSTaskTerminate       (OS_TCB     *p_tcb);
 
 static  void        OSThreadCreate        (pthread_t  *p_thread,
-                                           void       *p_task,
+                                           void     *(*p_task) (void *),
                                            void       *p_arg,
                                            int         prio);
 
@@ -138,7 +144,7 @@ static  CPU_TMR_INTERRUPT  OSTickTmrInterrupt = { .Interrupt.NamePtr  = "Tick tm
 */
 
 #if (OS_CFG_TICK_RATE_HZ > 100u)
-#warning "Time accuracy cannot be maintained with OS_CFG_TICK_RATE_HZ > 100u.\n\n",
+#pragma message("Time accuracy cannot be maintained with OS_CFG_TICK_RATE_HZ > 100u.")
 #endif
 
 
@@ -184,11 +190,15 @@ void  OSInitHook (void)
 {
     struct  rlimit  rtprio_limits;
 
-
     ERR_CHK(getrlimit(RLIMIT_RTPRIO, &rtprio_limits));
     if (rtprio_limits.rlim_cur != RLIM_INFINITY) {
-        printf("Error: RTPRIO limit is too low. Set to 'unlimited' via 'ulimit -r' or /etc/security/limits.conf\r\n");
-        exit(-1);
+        if (rtprio_limits.rlim_max != RLIM_INFINITY) {
+            fputs("Error: RTPRIO limit is too low. Set to 'unlimited' via 'ulimit -r' or /etc/security/limits.conf\r\n", stderr);
+            exit(EXIT_FAILURE);
+        }
+
+        rtprio_limits.rlim_cur = RLIM_INFINITY;
+        ERR_CHK(setrlimit(RLIMIT_RTPRIO, &rtprio_limits));
     }
 
     CPU_IntInit();                                              /* Initialize critical section objects.                 */
@@ -343,12 +353,12 @@ void  OSTaskReturnHook (OS_TCB  *p_tcb)
 *********************************************************************************************************
 */
 
-CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
-                         void          *p_arg,
+CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task __attribute__((__unused__)),
+                         void          *p_arg __attribute__((__unused__)),
                          CPU_STK       *p_stk_base,
-                         CPU_STK       *p_stk_limit,
-                         CPU_STK_SIZE   stk_size,
-                         OS_OPT         opt)
+                         CPU_STK       *p_stk_limit __attribute__((__unused__)),
+                         CPU_STK_SIZE   stk_size __attribute__((__unused__)),
+                         OS_OPT         opt __attribute__((__unused__)))
 {
     return (p_stk_base);
 }
@@ -626,7 +636,7 @@ static void  *OSTaskPosix (void  *p_arg)
     p_tcb     = (OS_TCB           *)p_arg;
     p_tcb_ext = (OS_TCB_EXT_POSIX *)p_tcb->ExtPtr;
 
-    p_tcb_ext->ProcessId = syscall(SYS_gettid);
+    p_tcb_ext->ProcessId = (pid_t)syscall(SYS_gettid);
     ERR_CHK(sem_post(&p_tcb_ext->InitSem));
 
 #ifdef OS_CFG_MSG_TRACE_EN
@@ -637,7 +647,7 @@ static void  *OSTaskPosix (void  *p_arg)
 
     CPU_INT_DIS();
     {
-        int ret = -1u;
+        int ret = -1;
         while (ret != 0u) {
             ret = sem_wait(&p_tcb_ext->Sem);                    /* Wait until first CTX SW.                             */
             if ((ret != 0) && (ret != -EINTR)) {
@@ -647,7 +657,9 @@ static void  *OSTaskPosix (void  *p_arg)
     }
     CPU_INT_EN();
 
+#if (OS_CFG_DBG_EN > 0u)
     ((void (*)(void *))p_tcb->TaskEntryAddr)(p_tcb->TaskEntryArg);
+#endif
 
     OSTaskDel(p_tcb, &err);                                     /* Thread may exit at OSCtxSw().                        */
 
@@ -700,7 +712,7 @@ static  void  OSTaskTerminate (OS_TCB  *p_tcb)
 */
 
 static  void  OSThreadCreate (pthread_t  *p_thread,
-                            void         *p_task,
+                            void       *(*p_task) (void *),
                             void         *p_arg,
                             int           prio)
 {
