@@ -126,14 +126,16 @@ static  void        OSTimeTickHandler     (void);
 */
 
                                                                                             /* Tick timer cfg.          */
-static  CPU_TMR_INTERRUPT  OSTickTmrInterrupt = { .Interrupt.NamePtr  = "Tick tmr interrupt",
-                                                  .Interrupt.Prio     =  10u,
-                                                  .Interrupt.TraceEn  =  0u,
-                                                  .Interrupt.ISR_Fnct =  OSTimeTickHandler,
-                                                  .Interrupt.En       =  1u,
-                                                  .OneShot            =  0u,
-                                                  .PeriodSec          =  0u,
-                                                  .PeriodMuSec        = (1000000u / OS_CFG_TICK_RATE_HZ)
+static  CPU_TMR_INTERRUPT  OSTickTmrInterrupt = { {
+                                                    OSTimeTickHandler,
+                                                    10u,
+                                                    1u,
+                                                    "Tick tmr interrupt",
+                                                    0u
+                                                  },
+                                                  0u,
+                                                  0u,
+                                                  (1000000u / OS_CFG_TICK_RATE_HZ)
                                                 };
 
 
