@@ -451,27 +451,6 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
                                                                 /* Align the stack to 8-bytes.                          */
     p_stk = (CPU_STK *)((CPU_STK)(p_stk) & 0xFFFFFFF8u);
                                                                 /* Registers stacked as if auto-saved on exception      */
-#if (OS_CPU_ARM_FP_EN > 0u)                                     /* FPU auto-saved registers.                            */
-     --p_stk;
-    *(--p_stk) = (CPU_STK)0x02000000u;                          /* FPSCR                                                */
-                                                                /* Initialize S0-S15 floating point registers           */
-    *(--p_stk) = (CPU_STK)0x41700000u;                          /* S15                                                  */
-    *(--p_stk) = (CPU_STK)0x41600000u;                          /* S14                                                  */
-    *(--p_stk) = (CPU_STK)0x41500000u;                          /* S13                                                  */
-    *(--p_stk) = (CPU_STK)0x41400000u;                          /* S12                                                  */
-    *(--p_stk) = (CPU_STK)0x41300000u;                          /* S11                                                  */
-    *(--p_stk) = (CPU_STK)0x41200000u;                          /* S10                                                  */
-    *(--p_stk) = (CPU_STK)0x41100000u;                          /* S9                                                   */
-    *(--p_stk) = (CPU_STK)0x41000000u;                          /* S8                                                   */
-    *(--p_stk) = (CPU_STK)0x40E00000u;                          /* S7                                                   */
-    *(--p_stk) = (CPU_STK)0x40C00000u;                          /* S6                                                   */
-    *(--p_stk) = (CPU_STK)0x40A00000u;                          /* S5                                                   */
-    *(--p_stk) = (CPU_STK)0x40800000u;                          /* S4                                                   */
-    *(--p_stk) = (CPU_STK)0x40400000u;                          /* S3                                                   */
-    *(--p_stk) = (CPU_STK)0x40000000u;                          /* S2                                                   */
-    *(--p_stk) = (CPU_STK)0x3F800000u;                          /* S1                                                   */
-    *(--p_stk) = (CPU_STK)0x00000000u;                          /* S0                                                   */
-#endif
     *(--p_stk) = (CPU_STK)0x01000000u;                          /* xPSR                                                 */
     *(--p_stk) = (CPU_STK)p_task;                               /* Entry Point                                          */
     *(--p_stk) = (CPU_STK)OS_TaskReturn;                        /* R14 (LR)                                             */
@@ -480,12 +459,7 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
     *(--p_stk) = (CPU_STK)0x02020202u;                          /* R2                                                   */
     *(--p_stk) = (CPU_STK)p_stk_limit;                          /* R1                                                   */
     *(--p_stk) = (CPU_STK)p_arg;                                /* R0 : argument                                        */
-
-#if (OS_CPU_ARM_FP_EN > 0u)
-    *(--p_stk) = (CPU_STK)0xFFFFFFEDuL;                         /* R14: EXEC_RETURN; See Note 5                         */
-#else
     *(--p_stk) = (CPU_STK)0xFFFFFFFDuL;                         /* R14: EXEC_RETURN; See Note 5                         */
-#endif
                                                                 /* Remaining registers saved on process stack           */
     *(--p_stk) = (CPU_STK)0x11111111uL;                         /* R11                                                  */
     *(--p_stk) = (CPU_STK)0x10101010uL;                         /* R10                                                  */
@@ -495,26 +469,6 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
     *(--p_stk) = (CPU_STK)0x06060606uL;                         /* R6                                                   */
     *(--p_stk) = (CPU_STK)0x05050505uL;                         /* R5                                                   */
     *(--p_stk) = (CPU_STK)0x04040404uL;                         /* R4                                                   */
-
-#if (OS_CPU_ARM_FP_EN > 0u)
-                                                                /* Initialize S16-S31 floating point registers          */
-    *(--p_stk) = (CPU_STK)0x41F80000u;                          /* S31                                                  */
-    *(--p_stk) = (CPU_STK)0x41F00000u;                          /* S30                                                  */
-    *(--p_stk) = (CPU_STK)0x41E80000u;                          /* S29                                                  */
-    *(--p_stk) = (CPU_STK)0x41E00000u;                          /* S28                                                  */
-    *(--p_stk) = (CPU_STK)0x41D80000u;                          /* S27                                                  */
-    *(--p_stk) = (CPU_STK)0x41D00000u;                          /* S26                                                  */
-    *(--p_stk) = (CPU_STK)0x41C80000u;                          /* S25                                                  */
-    *(--p_stk) = (CPU_STK)0x41C00000u;                          /* S24                                                  */
-    *(--p_stk) = (CPU_STK)0x41B80000u;                          /* S23                                                  */
-    *(--p_stk) = (CPU_STK)0x41B00000u;                          /* S22                                                  */
-    *(--p_stk) = (CPU_STK)0x41A80000u;                          /* S21                                                  */
-    *(--p_stk) = (CPU_STK)0x41A00000u;                          /* S20                                                  */
-    *(--p_stk) = (CPU_STK)0x41980000u;                          /* S19                                                  */
-    *(--p_stk) = (CPU_STK)0x41900000u;                          /* S18                                                  */
-    *(--p_stk) = (CPU_STK)0x41880000u;                          /* S17                                                  */
-    *(--p_stk) = (CPU_STK)0x41800000u;                          /* S16                                                  */
-#endif
 
     return (p_stk);
 }
@@ -546,10 +500,6 @@ void  OSTaskSwHook (void)
 #endif
 #if (OS_CFG_TASK_STK_REDZONE_EN > 0u)
     CPU_BOOLEAN  stk_status;
-#endif
-
-#if (OS_CPU_ARM_FP_EN > 0u)
-    OS_CPU_FP_Reg_Push(OSTCBCurPtr->StkPtr);                    /* Push the FP registers of the current task.           */
 #endif
 
 #if OS_CFG_APP_HOOKS_EN > 0u
@@ -591,10 +541,6 @@ void  OSTaskSwHook (void)
     if (stk_status != OS_TRUE) {
         OSRedzoneHitHook(OSTCBCurPtr);
     }
-#endif
-
-#if (OS_CPU_ARM_FP_EN > 0u)
-    OS_CPU_FP_Reg_Pop(OSTCBHighRdyPtr->StkPtr);                 /* Pop the FP registers of the highest ready task.      */
 #endif
 }
 
