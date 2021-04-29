@@ -59,11 +59,6 @@ OS_KA_BASEPRI_BoundaryAddr:  .word  OS_KA_BASEPRI_Boundary
     .global  OSIntCtxSw
     .global  OS_CPU_PendSVHandler
 
-    .if __TI_VFP_SUPPORT__
-    .global  OS_CPU_FP_Reg_Push
-    .global  OS_CPU_FP_Reg_Pop
-    .endif
-
 
 ;********************************************************************************************************
 ;                                               EQUATES
@@ -82,59 +77,6 @@ NVIC_PENDSVSET:   .word   0x10000000                            ; Value to trigg
    .text
    .align 2
    .thumb
-
-
-;********************************************************************************************************
-;                                   FLOATING POINT REGISTERS PUSH
-;                             void  OS_CPU_FP_Reg_Push (CPU_STK  *stkPtr)
-;
-; Note(s) : 1) This function saves S16-S31 registers of the Floating Point Unit.
-;
-;           2) Pseudo-code is:
-;              a) Push remaining FPU regs S16-S31 on process stack;
-;              b) Update OSTCBCurPtr->StkPtr;
-;********************************************************************************************************
-
-    .if __TI_VFP_SUPPORT__
-    .asmfunc
-OS_CPU_FP_Reg_Push:
-    MRS     R1, PSP                                             ; PSP is process stack pointer
-    CBZ     R1, OS_CPU_FP_nosave                                ; Skip FP register save the first time
-
-    VSTMDB  R0!, {S16-S31}
-    LDR     R1, OSTCBCurPtrAddr
-    LDR     R2, [R1]
-    STR     R0, [R2]
-    .endasmfunc
-
-    .asmfunc
-OS_CPU_FP_nosave:
-    BX      LR
-    .endasmfunc
-    .endif
-
-
-;********************************************************************************************************
-;                                   FLOATING POINT REGISTERS POP
-;                             void  OS_CPU_FP_Reg_Pop (CPU_STK  *stkPtr)
-;
-; Note(s) : 1) This function restores S16-S31 of the Floating Point Unit.
-;
-;           2) Pseudo-code is:
-;              a) Restore regs S16-S31 of new process stack;
-;              b) Update OSTCBHighRdyPtr->StkPtr pointer of new proces stack;
-;********************************************************************************************************
-
-    .if __TI_VFP_SUPPORT__
-    .asmfunc
-OS_CPU_FP_Reg_Pop:
-    VLDMIA  R0!, {S16-S31}
-    LDR     R1, OSTCBHighRdyPtrAddr
-    LDR     R2, [R1]
-    STR     R0, [R2]
-    BX      LR
-    .endasmfunc
-    .endif
 
 
 ;********************************************************************************************************
@@ -189,6 +131,7 @@ OSStartHighRdy:
 
     MRS     R0, CONTROL
     ORR     R0, R0, #2
+    BIC     R0, R0, #4                                          ; Clear FPCA bit to indicate FPU is not in use
     MSR     CONTROL, R0
     ISB                                                         ; Sync instruction stream
 
@@ -281,6 +224,13 @@ OS_CPU_PendSVHandler:
     CPSIE   I
 
     MRS     R0, PSP                                             ; PSP is process stack pointer
+    .if __TI_VFP_SUPPORT__
+                                                                ; Push high vfp registers if the task is using the FPU context
+    TST       R14, #0x10
+    IT        EQ
+    VSTMDBEQ  R0!, {S16-S31}
+    .endif
+
     STMFD   R0!, {R4-R11, R14}                                  ; Save remaining regs r4-11, R14 on process stack
 
     LDR     R5, OSTCBCurPtrAddr                                 ; OSTCBCurPtr->StkPtr = SP;
@@ -303,10 +253,22 @@ OS_CPU_PendSVHandler:
     ORR     LR,  R4, #0x04                                      ; Ensure exception return uses process stack
     LDR     R0,  [R2]                                           ; R0 is new process SP; SP = OSTCBHighRdyPtr->StkPtr;
     LDMFD   R0!, {R4-R11, R14}                                  ; Restore r4-11, R14 from new process stack
+
+    .if __TI_VFP_SUPPORT__
+                                                                ; Pop the high vfp registers if the next task is using the FPU context
+    TST       R14, #0x10
+    IT        EQ
+    VLDMIAEQ  R0!, {S16-S31}
+    .endif
+
     MSR     PSP, R0                                             ; Load PSP with new process SP
 
     MOV     R2, #0                                              ; Restore BASEPRI priority level to 0
+    CPSID   I                                                   ; Cortex-M7 errata notice. See Note #5
     MSR     BASEPRI, R2
+    DSB
+    ISB
+    CPSIE   I
     BX      LR                                                  ; Exception return will restore remaining context
     .endasmfunc
 
