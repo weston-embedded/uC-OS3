@@ -164,7 +164,6 @@ void  OSTmrCreate (OS_TMR               *p_tmr,
         OS_TmrLock();
     }
 
-    p_tmr->State          = OS_TMR_STATE_STOPPED;               /* Initialize the timer fields                          */
 #if (OS_OBJ_TYPE_REQ > 0u)
 #if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_tmr->Type == OS_OBJ_TYPE_TMR) {
@@ -177,6 +176,8 @@ void  OSTmrCreate (OS_TMR               *p_tmr,
 #endif
     p_tmr->Type           = OS_OBJ_TYPE_TMR;
 #endif
+
+    p_tmr->State          = OS_TMR_STATE_STOPPED;               /* Initialize the timer fields                          */
 #if (OS_CFG_DBG_EN > 0u)
     p_tmr->NamePtr        = p_name;
 #else
