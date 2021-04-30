@@ -448,7 +448,7 @@ void  OSTimeTickHook (void)
 *********************************************************************************************************
 *                                          SYS TICK HANDLER
 *
-* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-II tick
+* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-III tick
 *              interrupt.
 *
 * Arguments  : None.
@@ -464,12 +464,12 @@ void  SysTick_Handler (void)
 
 
     CPU_CRITICAL_ENTER();
-    OSIntEnter();                              /* Tell uC/OS-II that we are starting an ISR            */
+    OSIntEnter();                              /* Tell uC/OS-III that we are starting an ISR           */
     CPU_CRITICAL_EXIT();
 
-    OSTimeTick();                              /* Call uC/OS-II's OSTimeTick()                         */
+    OSTimeTick();                              /* Call uC/OS-III's OSTimeTick()                        */
 
-    OSIntExit();                               /* Tell uC/OS-II that we are leaving the ISR            */
+    OSIntExit();                               /* Tell uC/OS-III that we are leaving the ISR           */
 }
 
 
