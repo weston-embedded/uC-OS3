@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 *
-*                        		    uC/OS-III BOARD SUPPORT PACKAGE
+*                                   uC/OS-III BOARD SUPPORT PACKAGE
 *                                          Dynamic Tick BSP
 *
 * Filename : bsp_os_dt.c
