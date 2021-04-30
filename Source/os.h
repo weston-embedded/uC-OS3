@@ -2144,6 +2144,15 @@ OS_TICK       OS_DynTickSet             (OS_TICK                ticks);
 #endif
 
 
+#ifndef OS_CFG_OBJ_CREATED_CHK_EN
+#error  "OS_CFG.H, Missing OS_CFG_OBJ_CREATED_CHK_EN: Allows you to include object created checks or not"
+#else
+    #if (OS_CFG_OBJ_CREATED_CHK_EN > 0u) && (OS_OBJ_TYPE_REQ == 0u)
+    #error "OS_CFG.H, OS_CFG_DBG_EN or OS_CFG_OBJ_TYPE_CHK_EN must be Enabled (1) to use object created checks."
+    #endif
+#endif
+
+
 #if     OS_CFG_PRIO_MAX < 8u
 #error  "OS_CFG.H, OS_CFG_PRIO_MAX must be >= 8"
 #endif
