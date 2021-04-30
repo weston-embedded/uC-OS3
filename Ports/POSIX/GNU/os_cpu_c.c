@@ -355,12 +355,12 @@ void  OSTaskReturnHook (OS_TCB  *p_tcb)
 *********************************************************************************************************
 */
 
-CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task __attribute__((__unused__)),
-                         void          *p_arg __attribute__((__unused__)),
+CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task __attribute__((unused)),
+                         void          *p_arg __attribute__((unused)),
                          CPU_STK       *p_stk_base,
-                         CPU_STK       *p_stk_limit __attribute__((__unused__)),
-                         CPU_STK_SIZE   stk_size __attribute__((__unused__)),
-                         OS_OPT         opt __attribute__((__unused__)))
+                         CPU_STK       *p_stk_limit __attribute__((unused)),
+                         CPU_STK_SIZE   stk_size __attribute__((unused)),
+                         OS_OPT         opt __attribute__((unused)))
 {
     return (p_stk_base);
 }
