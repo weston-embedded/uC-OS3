@@ -96,11 +96,13 @@ void  OSFlagCreate (OS_FLAG_GRP  *p_grp,
 
     CPU_CRITICAL_ENTER();
 #if (OS_OBJ_TYPE_REQ > 0u)
+#if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_grp->Type == OS_OBJ_TYPE_FLAG) {
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_OBJ_CREATED;
         return;
     }
+#endif
     p_grp->Type    = OS_OBJ_TYPE_FLAG;                          /* Set to event flag group type                         */
 #endif
 #if (OS_CFG_DBG_EN > 0u)

@@ -105,11 +105,13 @@ void  OSQCreate (OS_Q        *p_q,
 
     CPU_CRITICAL_ENTER();
 #if (OS_OBJ_TYPE_REQ > 0u)
+#if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_q->Type == OS_OBJ_TYPE_Q) {
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_OBJ_CREATED;
         return;
     }
+#endif
     p_q->Type    = OS_OBJ_TYPE_Q;                               /* Mark the data structure as a message queue           */
 #endif
 #if (OS_CFG_DBG_EN > 0u)

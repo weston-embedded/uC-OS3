@@ -100,11 +100,13 @@ void  OSSemCreate (OS_SEM      *p_sem,
 
     CPU_CRITICAL_ENTER();
 #if (OS_OBJ_TYPE_REQ > 0u)
+#if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_sem->Type == OS_OBJ_TYPE_SEM) {
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_OBJ_CREATED;
         return;
     }
+#endif
     p_sem->Type    = OS_OBJ_TYPE_SEM;                           /* Mark the data structure as a semaphore               */
 #endif
     p_sem->Ctr     = cnt;                                       /* Set semaphore value                                  */

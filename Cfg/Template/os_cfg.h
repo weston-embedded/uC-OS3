@@ -36,6 +36,7 @@
 #define OS_CFG_DYN_TICK_EN                         0u           /* Enable (1) or Disable (0) the Dynamic Tick                            */
 #define OS_CFG_INVALID_OS_CALLS_CHK_EN             1u           /* Enable (1) or Disable (0) checks for invalid kernel calls             */
 #define OS_CFG_OBJ_TYPE_CHK_EN                     1u           /* Enable (1) or Disable (0) object type checking                        */
+#define OS_CFG_OBJ_CREATED_CHK_EN                  1u           /* Enable (1) or Disable (0) object created checks                       */
 #define OS_CFG_TS_EN                               0u           /* Enable (1) or Disable (0) time stamping                               */
 
 #define OS_CFG_PRIO_MAX                           64u           /* Defines the maximum number of task priorities (see OS_PRIO data type) */

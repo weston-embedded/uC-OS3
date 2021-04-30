@@ -146,11 +146,13 @@ void  OSMemCreate (OS_MEM       *p_mem,
 
     CPU_CRITICAL_ENTER();
 #if (OS_OBJ_TYPE_REQ > 0u)
+#if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_mem->Type == OS_OBJ_TYPE_MEM) {
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_OBJ_CREATED;
         return;
     }
+#endif
     p_mem->Type        = OS_OBJ_TYPE_MEM;                       /* Set the type of object                               */
 #endif
 #if (OS_CFG_DBG_EN > 0u)
