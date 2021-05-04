@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -22,7 +22,7 @@
 *                                                 MPLAB
 *
 * File    : os_cpu_a.S
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 

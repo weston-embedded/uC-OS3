@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os_trace.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 * Note(s) : (1) The header file os_trace_events.h is the interface between uC/OS-III and your
 *               trace recorder of choice. To support trace recording, include one of the sub-folders

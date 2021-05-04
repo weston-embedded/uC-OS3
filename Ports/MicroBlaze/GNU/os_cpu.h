@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -21,7 +21,7 @@
 *                                          GNU C/C++ Compiler
 *
 * File    : os_cpu.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -90,4 +90,3 @@ void  OS_CPU_ISR    (void);                                 /* See OS_CPU_A.S   
 #endif
 
 #endif
-

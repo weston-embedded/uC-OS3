@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -20,7 +20,7 @@
 *                                         Renesas V850E2S Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Renesas V850E2S
 * Toolchain : IAR EWV850 v3.7x and 3.8x
@@ -342,4 +342,3 @@ void  OSTimeTickHook (void)
 #ifdef __cplusplus
 }
 #endif
-

@@ -2,7 +2,7 @@
 ;                                              uC/OS-III
 ;                                        The Real-Time Kernel
 ;
-;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 ;
 ;                                 SPDX-License-Identifier: APACHE-2.0
 ;
@@ -18,7 +18,7 @@
 ;                                IAR C/C++ Compiler for NEC 78K0R 4.60A
 ;
 ; File    : os_cpu_a.asm
-; Version : V3.08.00
+; Version : V3.08.01
 ;********************************************************************************************************
 
 ;********************************************************************************************************
@@ -192,4 +192,3 @@ OSTickISR1:
         RETI                                ; return from interrupt
 
         END
-

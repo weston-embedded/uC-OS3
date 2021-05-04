@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 * Note(s) : (1) Assumes the following versions (or more recent) of software modules are included
 *               in the project build:
@@ -2141,6 +2141,15 @@ OS_TICK       OS_DynTickSet             (OS_TICK                ticks);
 
 #ifndef OS_CFG_OBJ_TYPE_CHK_EN
 #error  "OS_CFG.H, Missing OS_CFG_OBJ_TYPE_CHK_EN: Enable (1) or Disable (0) checking for proper object types in kernel services"
+#endif
+
+
+#ifndef OS_CFG_OBJ_CREATED_CHK_EN
+#error  "OS_CFG.H, Missing OS_CFG_OBJ_CREATED_CHK_EN: Allows you to include object created checks or not"
+#else
+    #if (OS_CFG_OBJ_CREATED_CHK_EN > 0u) && (OS_OBJ_TYPE_REQ == 0u)
+    #error "OS_CFG.H, OS_CFG_DBG_EN or OS_CFG_OBJ_TYPE_CHK_EN must be Enabled (1) to use object created checks."
+    #endif
 #endif
 
 

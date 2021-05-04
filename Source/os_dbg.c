@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -19,7 +19,7 @@
 *                                          DEBUGGER CONSTANTS
 *
 * File    : os_dbg.c
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -106,6 +106,7 @@ CPU_INT16U  const  OSDbg_MutexSize             = 0u;
 #endif
 
 CPU_INT08U  const  OSDbg_ObjTypeChkEn          = OS_CFG_OBJ_TYPE_CHK_EN;
+CPU_INT08U  const  OSDbg_ObjCreatedChkEn       = OS_CFG_OBJ_CREATED_CHK_EN;
 
 
 CPU_INT16U  const  OSDbg_PendListSize          = sizeof(OS_PEND_LIST);
@@ -449,6 +450,7 @@ void  OS_Dbg_Init (void)
 #endif
 
     p_temp08 = (CPU_INT08U const *)&OSDbg_ObjTypeChkEn;
+    p_temp08 = (CPU_INT08U const *)&OSDbg_ObjCreatedChkEn;
 
     p_temp16 = (CPU_INT16U const *)&OSDbg_PendListSize;
     p_temp16 = (CPU_INT16U const *)&OSDbg_PendObjSize;

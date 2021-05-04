@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -20,7 +20,7 @@
 *                                              RISC-V PORT
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : RISC-V RV32
 * Toolchain : GNU C Compiler
@@ -448,7 +448,7 @@ void  OSTimeTickHook (void)
 *********************************************************************************************************
 *                                          SYS TICK HANDLER
 *
-* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-II tick
+* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-III tick
 *              interrupt.
 *
 * Arguments  : None.
@@ -464,12 +464,12 @@ void  SysTick_Handler (void)
 
 
     CPU_CRITICAL_ENTER();
-    OSIntEnter();                              /* Tell uC/OS-II that we are starting an ISR            */
+    OSIntEnter();                              /* Tell uC/OS-III that we are starting an ISR           */
     CPU_CRITICAL_EXIT();
 
-    OSTimeTick();                              /* Call uC/OS-II's OSTimeTick()                         */
+    OSTimeTick();                              /* Call uC/OS-III's OSTimeTick()                        */
 
-    OSIntExit();                               /* Tell uC/OS-II that we are leaving the ISR            */
+    OSIntExit();                               /* Tell uC/OS-III that we are leaving the ISR           */
 }
 
 

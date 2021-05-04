@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -20,7 +20,7 @@
 *                                             ARMv7-M Port
 *
 * File      : os_cpu.h
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : ARMv7-M Cortex-M
 * Mode      : Thumb-2 ISA
@@ -156,11 +156,6 @@ void  OS_CPU_SysTickInitFreq(CPU_INT32U   cpu_freq);
 
 void  OS_CPU_SysTickHandler (void);
 void  OS_CPU_PendSVHandler  (void);
-
-#if (OS_CPU_ARM_FP_EN > 0u)
-void  OS_CPU_FP_Reg_Push    (CPU_STK     *stkPtr);
-void  OS_CPU_FP_Reg_Pop     (CPU_STK     *stkPtr);
-#endif
 
 
 /*

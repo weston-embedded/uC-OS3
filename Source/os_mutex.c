@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -19,7 +19,7 @@
 *                                           MUTEX MANAGEMENT
 *
 * File    : os_mutex.c
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -95,11 +95,13 @@ void  OSMutexCreate (OS_MUTEX  *p_mutex,
 
     CPU_CRITICAL_ENTER();
 #if (OS_OBJ_TYPE_REQ > 0u)
+#if (OS_CFG_OBJ_CREATED_CHK_EN > 0u)
     if (p_mutex->Type == OS_OBJ_TYPE_MUTEX) {
         CPU_CRITICAL_EXIT();
         *p_err = OS_ERR_OBJ_CREATED;
         return;
     }
+#endif
     p_mutex->Type              =  OS_OBJ_TYPE_MUTEX;            /* Mark the data structure as a mutex                   */
 #endif
 #if (OS_CFG_DBG_EN > 0u)
