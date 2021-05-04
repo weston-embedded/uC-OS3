@@ -20,7 +20,7 @@
 *                                          Microsoft Win32 Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Win32
 * Toolchain : Visual Studio

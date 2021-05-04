@@ -20,7 +20,7 @@
 *                                           IAR IMPLEMENTATION
 *
 * File    : os_tls.c
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -514,7 +514,7 @@ static  void  OS_TLS_LockCreate (void  **p_lock)
         p_tls_lock->NextPtr    = OS_TLS_LockPoolListPtr;
         OS_TLS_LockPoolListPtr = p_tls_lock;
         CPU_CRITICAL_EXIT();
-        
+
         *p_lock = (void *)0;                                      /* ... return a 'NULL' pointer.                     */
          return;
     }

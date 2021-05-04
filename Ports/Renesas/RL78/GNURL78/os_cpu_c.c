@@ -20,7 +20,7 @@
 *                                           Renesas RL78 Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Renesas RL78
 * Toolchain : E2Studios v2.x GNURL78 Compiler v1.x

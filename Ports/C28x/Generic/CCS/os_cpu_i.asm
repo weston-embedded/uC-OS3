@@ -17,7 +17,7 @@
 ;                                             TI C28x Port
 ;
 ; File      : os_cpu_i.asm
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : TI C28x
 ; Mode      : C28 Object mode
@@ -105,4 +105,3 @@ OS_CTX_RESTORE  .macro
                                                                 ; Restore registers part 2.
     POP     AR1H:AR0H                                           ;   AR1H:AR0H
     .endm
-

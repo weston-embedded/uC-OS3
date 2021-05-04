@@ -20,7 +20,7 @@
 *                                             ARMv7-A Port
 *
 * File    : os_cpu_c.c
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 * For     : ARMv7-A Cortex-A
 * Mode    : ARM or Thumb
@@ -429,4 +429,3 @@ void  OSTimeTickHook (void)
 #ifdef __cplusplus
 }
 #endif
-

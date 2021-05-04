@@ -17,7 +17,7 @@
 ;                                             ARMv7-A Port
 ;
 ; File      : os_cpu_a_vfp-none.asm
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : ARM7 or ARM9
 ; Mode      : ARM  or Thumb

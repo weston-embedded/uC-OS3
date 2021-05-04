@@ -20,7 +20,7 @@
 *                                       Renesas RX Specific code
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Renesas V850ES
 * Toolchain : IAR EWV850 v3.7x and up

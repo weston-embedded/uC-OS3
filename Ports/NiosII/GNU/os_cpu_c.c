@@ -20,7 +20,7 @@
 *                                          Altera NiosII Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Altera NiosII
 * Toolchain : GNU - Altera NiosII
@@ -388,4 +388,3 @@ void  OSTimeTickHook (void)
 #ifdef __cplusplus
 }
 #endif
-

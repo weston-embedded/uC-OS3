@@ -20,7 +20,7 @@
 *                                        EnSilica eSi-3250 Port
 *
 * File      : os_cpu.h
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : EnSilica eSi-3250
 * Mode      : Little-Endian, 32 registers

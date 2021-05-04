@@ -25,7 +25,7 @@
 *                                           development team
 *
 * File    : os_cpu.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -176,4 +176,3 @@ void       OS_CPU_RegisterHandler(INT8U ivg, FNCT_PTR fn, BOOLEAN nesting);  /* 
 #endif   /* _LANGUAGE_C */
 
 #endif /* OS_CPU_H */
-

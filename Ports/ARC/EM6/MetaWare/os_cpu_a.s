@@ -17,7 +17,7 @@
 ;                                         Synopsys ARC EM6 Port
 ;
 ; File      : os_cpu_a.s
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : Synopsys ARC EM6
 ; Mode      : Little-Endian, 32 registers, FPU, Code Density, Loop Counter, Stack Check

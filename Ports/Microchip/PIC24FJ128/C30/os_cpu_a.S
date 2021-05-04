@@ -17,7 +17,7 @@
 ;                                           PIC24 MPLab Port
 ;
 ; File    : os_cpu_a.S
-: Version : V3.08.00
+: Version : V3.08.01
 ;********************************************************************************************************
 
 
@@ -143,4 +143,3 @@ _OSIntCtxSw:
     OS_REGS_RESTORE                               ; Restore all of this tasks registers from the stack
 
     retfie                                        ; Return from interrupt
-

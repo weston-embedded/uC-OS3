@@ -21,7 +21,7 @@
 *                                         $$$$ Insert Compiler Name
 *
 * Filename : os_cpu_c.c
-* Version  : $$$$ V3.08.00
+* Version  : $$$$ V3.08.01
 *********************************************************************************************************
 * Note(s)  : (1) This file is used to create a uC/OS-III port.  You can use this template as a
 *                starting point instead of typing everything from scratch.
@@ -362,4 +362,3 @@ void  OSTimeTickHook (void)
 #ifdef __cplusplus
 }
 #endif
-

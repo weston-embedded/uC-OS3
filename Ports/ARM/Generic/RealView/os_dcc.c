@@ -21,7 +21,7 @@
 *                                           DCC Communication
 *
 * File      : os_dcc.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : ARM7 or ARM9
 * Mode      : ARM  or Thumb

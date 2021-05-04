@@ -20,7 +20,7 @@
 *                               OS CONFIGURATION (APPLICATION SPECIFICS)
 *
 * Filename : os_cfg_app.h
-* Version  : V3.08.00
+* Version  : V3.08.01
 *********************************************************************************************************
 */
 

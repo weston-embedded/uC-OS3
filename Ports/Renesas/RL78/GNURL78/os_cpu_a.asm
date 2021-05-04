@@ -17,7 +17,7 @@
 ;                                           Renesas RL78 Port
 ;
 ; File      : os_cpu_a.asm
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : Renesas RL78
 ; Toolchain : e2studios V 1.1.1.5 for w/ KPIT GNURL78 V1.1.0.x
@@ -217,4 +217,3 @@ _OSTickISR:
 
 
         .END
-

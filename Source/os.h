@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 * Note(s) : (1) Assumes the following versions (or more recent) of software modules are included
 *               in the project build:

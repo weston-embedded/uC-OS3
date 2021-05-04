@@ -18,7 +18,7 @@
 ;                           Renesas SH SERIES C/C++ Compiler (V.9.00.03.006)
 ;
 ; File    : os_cpu_a.src
-; Version : V3.08.00
+; Version : V3.08.01
 ;********************************************************************************************************
 
         .INCLUDE    "os_cpu_a.inc"         ; Include macros
@@ -199,4 +199,3 @@ _OSTickISR:
         NOP
 
         .END
-

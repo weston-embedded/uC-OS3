@@ -20,7 +20,7 @@
 *                                        EnSilica eSi-32nn Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : EnSilica eSi-32nn
 * Mode      : Little-Endian, 8, 16 or 32 registers

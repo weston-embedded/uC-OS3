@@ -21,7 +21,7 @@
 *                                          GNU C/C++ Compiler
 *
 * File    : os_cpu_a.S
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -963,4 +963,3 @@ OSStartHighRdy:
     addi    1, 1, STK_CTX_SIZE                          /* Adjust the stack pointer                    */
 
     rfi                                                 /* Start the task                              */
-

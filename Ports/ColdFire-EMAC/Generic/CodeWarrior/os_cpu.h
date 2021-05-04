@@ -20,7 +20,7 @@
 *                       Generic Coldfire with EMAC Port for CodeWarrior Compiler
 *
 * File    : os_cpu.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 

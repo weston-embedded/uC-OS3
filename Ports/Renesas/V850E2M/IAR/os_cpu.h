@@ -20,7 +20,7 @@
 *                                         Renesas V850E2M Port
 *
 * File      : os_cpu.h
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Renesas V850E2M
 * Toolchain : IAR EWV850 v3.7x and 3.8x

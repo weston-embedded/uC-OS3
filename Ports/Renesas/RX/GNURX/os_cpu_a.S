@@ -17,7 +17,7 @@
 ;                                       Renesas RX Specific Code
 ;
 ; File      : os_cpu_a.S
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : Renesas RX
 ; Toolchain : HEW      with GNURX compiler

@@ -17,7 +17,7 @@
 ;                                       Renesas RX Specific Code
 ;
 ; File      : os_cpu_a.s
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : Renesas RX
 ; Toolchain : IAR Embedded Workbench for Renesas RX

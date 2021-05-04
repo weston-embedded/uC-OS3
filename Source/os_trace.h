@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os_trace.h
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 * Note(s) : (1) The header file os_trace_events.h is the interface between uC/OS-III and your
 *               trace recorder of choice. To support trace recording, include one of the sub-folders

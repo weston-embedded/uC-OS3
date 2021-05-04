@@ -19,7 +19,7 @@
 *                                            TICK MANAGEMENT
 *
 * File    : os_tick.c
-* Version : V3.08.00
+* Version : V3.08.01
 *********************************************************************************************************
 */
 
@@ -574,4 +574,3 @@ static  void  OS_TickListUpdate (OS_TICK  ticks)
 }
 
 #endif                                                                   /* #if OS_CFG_TICK_EN                                   */
-

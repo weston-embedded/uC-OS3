@@ -20,7 +20,7 @@
 *                                           Renesas RL78 Port
 *
 * File      : os_cpu.h
-* Version   : V3.08.00
+* Version   : V3.08.01
 *********************************************************************************************************
 * For       : Renesas RL78
 * Toolchain : IAR EWRL78 v1.2x and up

@@ -18,7 +18,7 @@
 ;                                              VFP SUPPORT
 ;
 ; File      : os_cpu_fpu_a.asm
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : ARM7 or ARM9
 ; Mode      : ARM  or Thumb
