@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -21,7 +21,7 @@
 *                                              MSP430x5xx
 *
 * File     : os_cpu.h
-* Version  : V3.08.00
+* Version  : V3.08.01
 *********************************************************************************************************
 * Compiler : IAR System Embedded Workbench for TI MSP430 V5.20
 *********************************************************************************************************
@@ -348,4 +348,3 @@ void  OSTimeTickHook (void)
 #ifdef __cplusplus
 }
 #endif
-

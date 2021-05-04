@@ -2,7 +2,7 @@
 ;                                              uC/OS-III
 ;                                        The Real-Time Kernel
 ;
-;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 ;
 ;                                 SPDX-License-Identifier: APACHE-2.0
 ;
@@ -18,7 +18,7 @@
 ;                           Renesas SH SERIES C/C++ Compiler (V.9.00.03.006)
 ;
 ; File    : os_cpu_a.src
-; Version : V3.08.00
+; Version : V3.08.01
 ;********************************************************************************************************
 
         .INCLUDE    "os_cpu_a.inc"         ; Include OS_CTX_SAVE and OS_CTX_RESTORE macros
@@ -129,4 +129,3 @@ _OSIntCtxSw:
 
 
         .END
-

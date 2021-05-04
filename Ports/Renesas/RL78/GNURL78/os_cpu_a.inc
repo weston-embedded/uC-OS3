@@ -2,7 +2,7 @@
 ;                                              uC/OS-III
 ;                                        The Real-Time Kernel
 ;
-;                    Copyright 2009-2020 Silicon Laboratories Inc. www.silabs.com
+;                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 ;
 ;                                 SPDX-License-Identifier: APACHE-2.0
 ;
@@ -17,7 +17,7 @@
 ;                                           Renesas RL78 Port
 ;
 ; File      : os_cpu_a.inc
-; Version   : V3.08.00
+; Version   : V3.08.01
 ;********************************************************************************************************
 ; For       : Renesas RL78
 ; Toolchain : e2studios V 1.1.1.5 for w/ KPIT GNURL78 V1.1.0.x
@@ -150,4 +150,3 @@ branch:
 ;********************************************************************************************************
 ;                                     ASSEMBLY LANGUAGE MACROS FILE END
 ;********************************************************************************************************
-
