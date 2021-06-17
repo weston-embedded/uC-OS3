@@ -1,27 +1,26 @@
-/*
-*********************************************************************************************************
-*                                              uC/OS-III
-*                                        The Real-Time Kernel
-*
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
-*
-*                                 SPDX-License-Identifier: APACHE-2.0
-*
-*               This software is subject to an open source license and is distributed by
-*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
-*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
-*
-*********************************************************************************************************
+;********************************************************************************************************
+;                                              uC/OS-III
+;                                        The Real-Time Kernel
+;
+;                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+;
+;                                 SPDX-License-Identifier: APACHE-2.0
+;
+;               This software is subject to an open source license and is distributed by
+;                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+;                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
+;
+;********************************************************************************************************
 
 ;********************************************************************************************************
 ;
 ;                                       ASSEMBLY LANGUAGE PORT
 ;
-;                                           ARC
-;                                           MetaWare
+;                                                 ARC
+;                                              MetaWare
 ;
-; Filename     : os_cpu_a.asm
-; Version      : V3.08.01
+; Filename : os_cpu_a.asm
+; Version  : V3.08.01
 ;********************************************************************************************************
 
 #define __ASSEMBLY__
