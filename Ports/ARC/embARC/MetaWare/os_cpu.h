@@ -1,24 +1,16 @@
 /*
 *********************************************************************************************************
-*                                                uC/OS-III
-*                                          The Real-Time Kernel
+*                                              uC/OS-III
+*                                        The Real-Time Kernel
 *
-*                         (c) Copyright 2009-2018; Silicon Laboratories Inc.,
-*                                400 W. Cesar Chavez, Austin, TX 78701
+*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
 *
-*                   All rights reserved. Protected by international copyright laws.
+*                                 SPDX-License-Identifier: APACHE-2.0
 *
-*                  Your use of this software is subject to your acceptance of the terms
-*                  of a Silicon Labs Micrium software license, which can be obtained by
-*                  contacting info@micrium.com. If you do not agree to the terms of this
-*                  license, you may not use this software.
+*               This software is subject to an open source license and is distributed by
+*                Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+*                    Version 2.0 available at www.apache.org/licenses/LICENSE-2.0.
 *
-*                  Please help us continue to provide the Embedded community with the finest
-*                  software available. Your honesty is greatly appreciated.
-*
-*                    You can find our product's documentation at: doc.micrium.com
-*
-*                          For more information visit us at: www.micrium.com
 *********************************************************************************************************
 */
 
@@ -29,7 +21,7 @@
 *                                         MetaWare
 *
 * Filename     : os_cpu.h
-* Version      : V3.07.03
+* Version      : V3.08.01
 *********************************************************************************************************
 */
 
