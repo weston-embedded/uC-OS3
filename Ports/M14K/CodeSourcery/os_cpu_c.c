@@ -146,7 +146,7 @@ void  OSTaskDelHook (OS_TCB *ptcb)
 *
 * Description: This function is called when a task returns without being properly deleted.
 *
-* Arguments  : ptcb   is a pointer to the task control block of the task that was accidently returned.
+* Arguments  : ptcb   is a pointer to the task control block of the task that was accidentally returned.
 *
 * Note(s)    : 1) Interrupts are disabled during this call.
 *********************************************************************************************************

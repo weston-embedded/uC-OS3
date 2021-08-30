@@ -209,7 +209,7 @@ OS_TLS  OS_TLS_GetValue (OS_TCB     *p_tcb,
 *                                                      OS_TLS_ID   id,
 *                                                      OS_TLS      value);
 *
-*                          you can specify a NULL pointer if you don't want to have a fucntion associated with a TLS
+*                          you can specify a NULL pointer if you don't want to have a function associated with a TLS
 *                          register.  A NULL pointer (i.e. no function associated with a TLS register) is the default
 *                          value placed in OS_TLS_DestructPtrTbl[].
 *

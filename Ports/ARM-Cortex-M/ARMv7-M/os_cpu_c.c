@@ -404,8 +404,8 @@ void  OSTaskReturnHook (OS_TCB  *p_tcb)
 *                       prior to ARMV7 and to the A, R and M architecture profiles thereafter. Special considerations
 *                       associated with ARMV7M are discussed in section 2.3.3"
 *
-*                     (1) Even if the SP 8-byte aligment is not a requirement for the ARMv7M profile, the stack is aligned
-*                         to 8-byte boundaries to support legacy execution enviroments.
+*                     (1) Even if the SP 8-byte alignment is not a requirement for the ARMv7M profile, the stack is aligned
+*                         to 8-byte boundaries to support legacy execution environments.
 *
 *                 (c) Section 5.2.1.2 from the Procedure Call Standard for the ARM
 *                     architecture states :  "The stack must also conform to the following
@@ -413,7 +413,7 @@ void  OSTaskReturnHook (OS_TCB  *p_tcb)
 *
 *                     (1) SP mod 8 = 0. The stack must be double-word aligned"
 *
-*                 (d) From the ARM Technical Support Knowledge Base. 8 Byte stack aligment.
+*                 (d) From the ARM Technical Support Knowledge Base. 8 Byte stack alignment.
 *
 *                     "8 byte stack alignment is a requirement of the ARM Architecture Procedure
 *                      Call Standard [AAPCS]. This specifies that functions must maintain an 8 byte

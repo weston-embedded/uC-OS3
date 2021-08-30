@@ -225,7 +225,7 @@ OS_TLS  OS_TLS_GetValue (OS_TCB     *p_tcb,
 *                                                      OS_TLS_ID   id,
 *                                                      OS_TLS      value);
 *
-*                          you can specify a NULL pointer if you don't want to have a fucntion associated with a TLS
+*                          you can specify a NULL pointer if you don't want to have a function associated with a TLS
 *                          register.  A NULL pointer (i.e. no function associated with a TLS register) is the default
 *                          value placed in OS_TLS_DestructPtrTbl[].
 *
@@ -508,7 +508,7 @@ static  void  OS_TLS_LockCreate (void  **p_lock)
                   (CPU_CHAR *) 0,
                   (OS_ERR   *)&err);
 
-    if (err != OS_ERR_NONE) {                                     /* If the mutex create funtion fail?                */
+    if (err != OS_ERR_NONE) {                                     /* If the mutex create function fail?                */
         CPU_CRITICAL_ENTER();
                                                                   /* Return the OS_TLS_LOCK in front of the list      */
         p_tls_lock->NextPtr    = OS_TLS_LockPoolListPtr;

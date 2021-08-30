@@ -49,7 +49,7 @@ extern  "C" {
 *
 * Note(s): OS_TASK_SW()  invokes the task level context switch.
 *
-*          (1) On some processors, this corresponds to a call to OSCtxSw() which is an assemply language
+*          (1) On some processors, this corresponds to a call to OSCtxSw() which is an assembly language
 *              function that performs the context switch.
 *
 *          (2) On some processors, you need to simulate an interrupt using a 'sowfate interrupt' or a

@@ -188,7 +188,7 @@ OS_TICK  OS_DynTickGet (void)
     tmrcnt = /* $$$$ */;                                        /* Read current timer count.                            */
 
     if (/* $$$$ */) {                                           /* Check timer interrupt flag.                          */
-        return (TickDelta);                                     /* Counter Overflow has occured.                        */
+        return (TickDelta);                                     /* Counter Overflow has occurred.                        */
     }
 
     tmrcnt = TIMER_TO_OSTICK(tmrcnt);                           /* Otherwise, the value we read is valid.               */
