@@ -2822,6 +2822,8 @@ void  OS_TaskChangePrio(OS_TCB  *p_tcb,
                                                                 /* Block is empty when trace is disabled.               */
                                      OS_TRACE_MUTEX_TASK_PRIO_DISINHERIT(p_tcb_owner, prio_new);
                                   }
+                              }else{
+                                  p_tcb_owner = (OS_TCB )0;
                               }
                           }
 #endif
