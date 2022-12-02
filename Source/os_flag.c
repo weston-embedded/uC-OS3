@@ -1284,6 +1284,11 @@ void   OS_FlagTaskRdy (OS_TCB    *p_tcb,
 
         case OS_TASK_STATE_PEND_SUSPENDED:
         case OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED:
+#if (OS_CFG_TICK_EN > 0u)
+             if (p_tcb->TaskState == OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED) {
+                 OS_TickListRemove(p_tcb);                      /* Remove from tick list                                */
+             }
+#endif
              p_tcb->TaskState = OS_TASK_STATE_SUSPENDED;
              break;
 
