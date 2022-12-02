@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -188,7 +188,7 @@ OS_TICK  OS_DynTickGet (void)
     tmrcnt = /* $$$$ */;                                        /* Read current timer count.                            */
 
     if (/* $$$$ */) {                                           /* Check timer interrupt flag.                          */
-        return (TickDelta);                                     /* Counter Overflow has occured.                        */
+        return (TickDelta);                                     /* Counter Overflow has occurred.                        */
     }
 
     tmrcnt = TIMER_TO_OSTICK(tmrcnt);                           /* Otherwise, the value we read is valid.               */

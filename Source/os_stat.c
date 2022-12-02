@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -19,7 +19,7 @@
 *                                           STATISTICS MODULE
 *
 * File    : os_stat.c
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 */
 
@@ -179,7 +179,7 @@ void  OSStatReset (OS_ERR  *p_err)
 *
 * Argument(s): p_err      is a pointer to a variable that will contain an error code returned by this function.
 *
-*                             OS_ERR_NONE              The call was successfu
+*                             OS_ERR_NONE              The call was successful
 *                             OS_ERR_OS_NOT_RUNNING    If uC/OS-III is not running yet
 *
 * Returns    : none

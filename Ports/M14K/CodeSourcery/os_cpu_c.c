@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -21,7 +21,7 @@
 *                                               MicroMips
 *
 * File    : os_cpu_c.c
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 */
 
@@ -146,7 +146,7 @@ void  OSTaskDelHook (OS_TCB *ptcb)
 *
 * Description: This function is called when a task returns without being properly deleted.
 *
-* Arguments  : ptcb   is a pointer to the task control block of the task that was accidently returned.
+* Arguments  : ptcb   is a pointer to the task control block of the task that was accidentally returned.
 *
 * Note(s)    : 1) Interrupts are disabled during this call.
 *********************************************************************************************************

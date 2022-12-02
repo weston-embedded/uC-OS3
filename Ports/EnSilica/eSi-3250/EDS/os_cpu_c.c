@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -20,7 +20,7 @@
 *                                        EnSilica eSi-32nn Port
 *
 * File      : os_cpu_c.c
-* Version   : V3.08.01
+* Version   : V3.08.02
 *********************************************************************************************************
 * For       : EnSilica eSi-32nn
 * Mode      : Little-Endian, 8, 16 or 32 registers

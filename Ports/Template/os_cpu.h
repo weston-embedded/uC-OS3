@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -21,7 +21,7 @@
 *                                         $$$$ Insert Compiler Name
 *
 * Filename : os_cpu.h
-* Version  : $$$$ V3.08.01
+* Version  : $$$$ V3.08.02
 *********************************************************************************************************
 * Note(s)  : (1) This file is used to create a uC/OS-III port.  You can use this template as a
 *                starting point instead of typing everything from scratch.
@@ -49,7 +49,7 @@ extern  "C" {
 *
 * Note(s): OS_TASK_SW()  invokes the task level context switch.
 *
-*          (1) On some processors, this corresponds to a call to OSCtxSw() which is an assemply language
+*          (1) On some processors, this corresponds to a call to OSCtxSw() which is an assembly language
 *              function that performs the context switch.
 *
 *          (2) On some processors, you need to simulate an interrupt using a 'sowfate interrupt' or a

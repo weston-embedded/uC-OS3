@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -19,7 +19,7 @@
 *                                            TASK MANAGEMENT
 *
 * File    : os_task.c
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 */
 
@@ -2822,6 +2822,8 @@ void  OS_TaskChangePrio(OS_TCB  *p_tcb,
                                                                 /* Block is empty when trace is disabled.               */
                                      OS_TRACE_MUTEX_TASK_PRIO_DISINHERIT(p_tcb_owner, prio_new);
                                   }
+                              } else {
+                                  p_tcb_owner = (OS_TCB *)0;
                               }
                           }
 #endif

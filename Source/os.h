@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os.h
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 * Note(s) : (1) Assumes the following versions (or more recent) of software modules are included
 *               in the project build:
@@ -35,7 +35,7 @@
 ************************************************************************************************************************
 */
 
-#define  OS_VERSION  30800u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
+#define  OS_VERSION  30802u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
 
 /*
 ************************************************************************************************************************
@@ -732,7 +732,7 @@ struct  os_flag_grp {                                       /* Event Flag Group 
     CPU_TS               TS;                                /* Timestamp of when last post occurred                   */
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           FlagID;                            /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             FlagID;                            /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 
@@ -761,7 +761,7 @@ struct os_mem {                                             /* MEMORY CONTROL BL
     OS_MEM              *DbgNextPtr;
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           MemID;                             /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             MemID;                             /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 
@@ -804,7 +804,7 @@ struct  os_msg_q {                                          /* OS_MSG_Q         
     OS_MSG_QTY           NbrEntriesMax;                     /* Peak number of entries in the queue                    */
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           MsgQID;                            /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             MsgQID;                            /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 
@@ -839,7 +839,7 @@ struct  os_mutex {                                          /* Mutual Exclusion 
     CPU_TS               TS;
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           MutexID;                           /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             MutexID;                           /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 
@@ -926,7 +926,7 @@ struct  os_sem {                                            /* Semaphore        
     CPU_TS               TS;
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           SemID;                             /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             SemID;                             /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 
@@ -991,7 +991,7 @@ struct os_tcb {
     CPU_TS               TS;                                /* Timestamp                                              */
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           SemID;                             /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             SemID;                             /* Unique ID for third-party debuggers and tracers.       */
 #endif
     OS_SEM_CTR           SemCtr;                            /* Task specific semaphore counter                        */
 
@@ -1064,7 +1064,7 @@ struct os_tcb {
     CPU_CHAR            *DbgNamePtr;
 #endif
 #if (defined(OS_CFG_TRACE_EN) && (OS_CFG_TRACE_EN > 0u))
-    CPU_INT16U           TaskID;                            /* Unique ID for third-party debuggers and tracers.       */
+    CPU_ADDR             TaskID;                            /* Unique ID for third-party debuggers and tracers.       */
 #endif
 };
 

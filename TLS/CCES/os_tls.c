@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -20,7 +20,7 @@
 *                           Cross Core Embedded Studio (CCES) IMPLEMENTATION
 *
 * File    : os_tls.c
-* Version : V3.08.01
+* Version : V3.08.02
 ************************************************************************************************************************
 */
 
@@ -180,7 +180,7 @@ OS_TLS  OS_TLS_GetValue (OS_TCB     *p_tcb,
 *                                                      OS_TLS_ID   id,
 *                                                      OS_TLS      value);
 *
-*                          you can specify a NULL pointer if you don't want to have a fucntion associated with a TLS
+*                          you can specify a NULL pointer if you don't want to have a function associated with a TLS
 *                          register.  A NULL pointer (i.e. no function associated with a TLS register) is the default
 *                          value placed in OS_TLS_DestructPtrTbl[].
 *

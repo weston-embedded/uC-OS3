@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -19,7 +19,7 @@
 *                                         EVENT FLAG MANAGEMENT
 *
 * File    : os_flag.c
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 */
 
@@ -1284,6 +1284,11 @@ void   OS_FlagTaskRdy (OS_TCB    *p_tcb,
 
         case OS_TASK_STATE_PEND_SUSPENDED:
         case OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED:
+#if (OS_CFG_TICK_EN > 0u)
+             if (p_tcb->TaskState == OS_TASK_STATE_PEND_TIMEOUT_SUSPENDED) {
+                 OS_TickListRemove(p_tcb);                      /* Remove from tick list                                */
+             }
+#endif
              p_tcb->TaskState = OS_TASK_STATE_SUSPENDED;
              break;
 
