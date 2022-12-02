@@ -2,7 +2,7 @@
 ;                                              uC/OS-III
 ;                                        The Real-Time Kernel
 ;
-;                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+;                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 ;
 ;                                 SPDX-License-Identifier: APACHE-2.0
 ;
@@ -18,7 +18,7 @@
 ;                                          Banked Memory Model
 ;
 ; File    : os_cpu_a.s
-; Version : V3.08.01
+; Version : V3.08.02
 ;********************************************************************************************************
 
 NON_BANKED:       section

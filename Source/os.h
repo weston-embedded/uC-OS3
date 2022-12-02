@@ -3,7 +3,7 @@
 *                                              uC/OS-III
 *                                        The Real-Time Kernel
 *
-*                    Copyright 2009-2021 Silicon Laboratories Inc. www.silabs.com
+*                    Copyright 2009-2022 Silicon Laboratories Inc. www.silabs.com
 *
 *                                 SPDX-License-Identifier: APACHE-2.0
 *
@@ -17,7 +17,7 @@
 /*
 *********************************************************************************************************
 * File    : os.h
-* Version : V3.08.01
+* Version : V3.08.02
 *********************************************************************************************************
 * Note(s) : (1) Assumes the following versions (or more recent) of software modules are included
 *               in the project build:
@@ -35,7 +35,7 @@
 ************************************************************************************************************************
 */
 
-#define  OS_VERSION  30801u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
+#define  OS_VERSION  30802u                       /* Version of uC/OS-III (Vx.yy.zz mult. by 10000)                   */
 
 /*
 ************************************************************************************************************************
