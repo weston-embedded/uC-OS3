@@ -157,6 +157,7 @@ OSStartHighRdy:
 
 .thumb_func
 OSCtxSw:
+.thumb_func
 OSIntCtxSw:
     LDR     R0, =NVIC_INT_CTRL                                  @ Trigger the PendSV exception (causes context switch)
     LDR     R1, =NVIC_PENDSVSET
