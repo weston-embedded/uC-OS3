@@ -513,8 +513,10 @@ void  OSTaskSwHook (void)
 #if OS_CFG_TASK_PROFILE_EN > 0u
     ts = OS_TS_GET();
     if (OSTCBCurPtr != OSTCBHighRdyPtr) {
-        OSTCBCurPtr->CyclesDelta  = ts - OSTCBCurPtr->CyclesStart;
-        OSTCBCurPtr->CyclesTotal += (OS_CYCLES)OSTCBCurPtr->CyclesDelta;
+        if (ts > OSTCBCurPtr->CyclesStart) {
+            OSTCBCurPtr->CyclesDelta  = ts - OSTCBCurPtr->CyclesStart;
+            OSTCBCurPtr->CyclesTotal += (OS_CYCLES)OSTCBCurPtr->CyclesDelta;
+        }
     }
 
     OSTCBHighRdyPtr->CyclesStart = ts;

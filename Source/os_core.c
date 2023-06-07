@@ -272,6 +272,18 @@ void  OSIntEnter (void)
         return;                                                 /* Yes                                                  */
     }
 
+#if OS_CFG_TASK_PROFILE_EN > 0u
+    if(OSIntNestingCtr==0) {
+        CPU_TS  ts;
+
+        ts = OS_TS_GET();
+        if(ts > OSTCBCurPtr->CyclesStart) {
+            OSTCBCurPtr->CyclesDelta  = ts - OSTCBCurPtr->CyclesStart;
+            OSTCBCurPtr->CyclesTotal += (OS_CYCLES)OSTCBCurPtr->CyclesDelta;
+        }
+    }
+#endif
+
     OSIntNestingCtr++;                                          /* Increment ISR nesting level                          */
 }
 
@@ -337,6 +349,10 @@ void  OSIntExit (void)
         OSRedzoneHitHook((OS_TCB *)0);
     }
 #endif
+#endif
+
+#if OS_CFG_TASK_PROFILE_EN > 0u
+    OSTCBCurPtr->CyclesStart = OS_TS_GET();
 #endif
 
     OSPrioHighRdy   = OS_PrioGetHighest();                      /* Find highest priority                                */
