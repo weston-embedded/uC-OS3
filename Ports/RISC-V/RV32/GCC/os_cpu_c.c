@@ -307,7 +307,7 @@ CPU_STK  *OSTaskStkInit (OS_TASK_PTR    p_task,
     p_stk = (CPU_STK *)((CPU_STK)(p_stk) & 0xFFFFFFF0u);
 
     /* make space for floating point registers */
-    for(int i = 0; i < 32; i++) {
+    for(int i = 0; i < 33; i++) {
         *(--p_stk) = (CPU_STK)0;
     }
     /* make space for base registers */

@@ -107,6 +107,10 @@ OSStartHighRdy:
     # value stored in t0 is stored into mepc
     csrw   mepc, t0
 
+# Restore FPU CSR
+    lw     t0,   64 * 4(sp)
+    fscsr  t0
+
 # Restore x1 to x31 registers (base registers)
     # load word from memory addres [(0 * 4) + sp] into ra register
     lw     ra,   0 * 4(sp)
@@ -138,43 +142,42 @@ OSStartHighRdy:
     lw     t5,  29 * 4(sp)
     lw     t6,  30 * 4(sp)
 
-    #Restore f0 to f31 registers (FP registers)
-    flw    f0,  32 * 4(sp)
-    flw    f1,  33 * 4(sp)
-    flw    f2,  34 * 4(sp)
-    flw    f3,  35 * 4(sp)
-    flw    f4,  36 * 4(sp)
-    flw    f5,  37 * 4(sp)
-    flw    f6,  38 * 4(sp)
-    flw    f7,  39 * 4(sp)
-    flw    f8,  40 * 4(sp)
-    flw    f9,  41 * 4(sp)
-    flw    f10, 42 * 4(sp)
-    flw    f11, 43 * 4(sp)
-    flw    f12, 44 * 4(sp)
-    flw    f13, 45 * 4(sp)
-    flw    f14, 46 * 4(sp)
-    flw    f15, 47 * 4(sp)
-    flw    f16, 48 * 4(sp)
-    flw    f17, 49 * 4(sp)
-    flw    f18, 50 * 4(sp)
-    flw    f19, 51 * 4(sp)
-    flw    f20, 52 * 4(sp)
-    flw    f21, 53 * 4(sp)
-    flw    f22, 54 * 4(sp)
-    flw    f23, 55 * 4(sp)
-    flw    f24, 56 * 4(sp)
-    flw    f25, 57 * 4(sp)
-    flw    f26, 58 * 4(sp)
-    flw    f27, 59 * 4(sp)
-    flw    f28, 60 * 4(sp)
-    flw    f29, 61 * 4(sp)
-    flw    f30, 62 * 4(sp)
-    flw    f31, 63 * 4(sp)
+    #  Restore FPU registers
+    flw    ft0,  32 * 4(sp)
+    flw    ft1,  33 * 4(sp)
+    flw    ft2,  34 * 4(sp)
+    flw    ft3,  35 * 4(sp)
+    flw    ft4,  36 * 4(sp)
+    flw    ft5,  37 * 4(sp)
+    flw    ft6,  38 * 4(sp)
+    flw    ft7,  39 * 4(sp)
+    flw    ft8,  40 * 4(sp)
+    flw    ft9,  41 * 4(sp)
+    flw    ft10, 42 * 4(sp)
+    flw    ft11, 43 * 4(sp)
+    flw    fa0,  44 * 4(sp)
+    flw    fa1,  45 * 4(sp)
+    flw    fa2,  46 * 4(sp)
+    flw    fa3,  47 * 4(sp)
+    flw    fa4,  48 * 4(sp)
+    flw    fa5,  49 * 4(sp)
+    flw    fa6,  50 * 4(sp)
+    flw    fa7,  51 * 4(sp)
+    flw    fs0,  52 * 4(sp)
+    flw    fs1,  53 * 4(sp)
+    flw    fs2,  54 * 4(sp)
+    flw    fs3,  55 * 4(sp)
+    flw    fs4,  56 * 4(sp)
+    flw    fs5,  57 * 4(sp)
+    flw    fs6,  58 * 4(sp)
+    flw    fs7,  59 * 4(sp)
+    flw    fs8,  60 * 4(sp)
+    flw    fs9,  61 * 4(sp)
+    flw    fs10, 62 * 4(sp)
+    flw    fs11, 63 * 4(sp)
 
 # Compensate for the stack pointer
-    # sp = sp + 64 * 4
-    addi   sp, sp, 64 * 4
+    addi   sp, sp, 65 * 4
 
 # Use register t6 to jump to HIGHEST priority
     csrr   t6, mepc
@@ -209,7 +212,7 @@ OSCtxSw:
 .align 8
 ucos_intr_exception_handler:
     # save regs to current sp
-    addi sp, sp, -4*64
+    addi sp, sp, -4*65
     # store contents of register ra into memory [(0 * 4) + sp]
     sw     ra,   0 * 4(sp)
     sw     t0,   4 * 4(sp)
@@ -240,39 +243,43 @@ ucos_intr_exception_handler:
     sw     t5,  29 * 4(sp)
     sw     t6,  30 * 4(sp)
 
-    #  save f0 to f31 registers (FPU registers)
-    fsw    f0,  32 * 4(sp)
-    fsw    f1,  33 * 4(sp)
-    fsw    f2,  34 * 4(sp)
-    fsw    f3,  35 * 4(sp)
-    fsw    f4,  36 * 4(sp)
-    fsw    f5,  37 * 4(sp)
-    fsw    f6,  38 * 4(sp)
-    fsw    f7,  39 * 4(sp)
-    fsw    f8,  40 * 4(sp)
-    fsw    f9,  41 * 4(sp)
-    fsw    f10, 42 * 4(sp)
-    fsw    f11, 43 * 4(sp)
-    fsw    f12, 44 * 4(sp)
-    fsw    f13, 45 * 4(sp)
-    fsw    f14, 46 * 4(sp)
-    fsw    f15, 47 * 4(sp)
-    fsw    f16, 48 * 4(sp)
-    fsw    f17, 49 * 4(sp)
-    fsw    f18, 50 * 4(sp)
-    fsw    f19, 51 * 4(sp)
-    fsw    f20, 52 * 4(sp)
-    fsw    f21, 53 * 4(sp)
-    fsw    f22, 54 * 4(sp)
-    fsw    f23, 55 * 4(sp)
-    fsw    f24, 56 * 4(sp)
-    fsw    f25, 57 * 4(sp)
-    fsw    f26, 58 * 4(sp)
-    fsw    f27, 59 * 4(sp)
-    fsw    f28, 60 * 4(sp)
-    fsw    f29, 61 * 4(sp)
-    fsw    f30, 62 * 4(sp)
-    fsw    f31, 63 * 4(sp)
+    #  save FPU registers
+    fsw    ft0,  32 * 4(sp)
+    fsw    ft1,  33 * 4(sp)
+    fsw    ft2,  34 * 4(sp)
+    fsw    ft3,  35 * 4(sp)
+    fsw    ft4,  36 * 4(sp)
+    fsw    ft5,  37 * 4(sp)
+    fsw    ft6,  38 * 4(sp)
+    fsw    ft7,  39 * 4(sp)
+    fsw    ft8,  40 * 4(sp)
+    fsw    ft9,  41 * 4(sp)
+    fsw    ft10, 42 * 4(sp)
+    fsw    ft11, 43 * 4(sp)
+    fsw    fa0,  44 * 4(sp)
+    fsw    fa1,  45 * 4(sp)
+    fsw    fa2,  46 * 4(sp)
+    fsw    fa3,  47 * 4(sp)
+    fsw    fa4,  48 * 4(sp)
+    fsw    fa5,  49 * 4(sp)
+    fsw    fa6,  50 * 4(sp)
+    fsw    fa7,  51 * 4(sp)
+    fsw    fs0,  52 * 4(sp)
+    fsw    fs1,  53 * 4(sp)
+    fsw    fs2,  54 * 4(sp)
+    fsw    fs3,  55 * 4(sp)
+    fsw    fs4,  56 * 4(sp)
+    fsw    fs5,  57 * 4(sp)
+    fsw    fs6,  58 * 4(sp)
+    fsw    fs7,  59 * 4(sp)
+    fsw    fs8,  60 * 4(sp)
+    fsw    fs9,  61 * 4(sp)
+    fsw    fs10, 62 * 4(sp)
+    fsw    fs11, 63 * 4(sp)
+
+# Save FPU CSR
+    frcsr   t0
+    sw      t0, 64 * 4(sp)
 
     # If it is a ecall, do not add 4 in mepc
     # otherwise add 4 in mepc
@@ -285,7 +292,7 @@ ucos_intr_exception_handler:
     # If t1 != t3 jump to DONTADD:
     bne t1, t3, DONTADD
     addi   t0,  t0, 4
-   
+
 DONTADD: # for interrupt do not add 4 in mepc
     sw     t0,  31*4(sp)
     # load address of OSTCBCurPtr into t0 register
@@ -312,7 +319,7 @@ run_exception_handler:
     j run_ecall_handler
 
 run_interrupt_exception_handler:
-    jal osa_intr_master_isr 
+    jal osa_intr_master_isr
 
 run_ecall_handler:
     j Software_IRQHandler
@@ -359,6 +366,16 @@ Software_IRQHandler:
     lw     t0, 31 * 4(sp)
     csrw   mepc, t0
 
+# Exception return will restore remaining context
+    # set MPIE = 1
+    # interrupts will be enabled from here onwards
+    li t0, 0x80
+    csrrs zero, mstatus, t0
+
+# Restore FPU CSR
+    lw     t0,   64 * 4(sp)
+    fscsr  t0
+
 # Restore x1 to x31 registers
     lw     ra,   0 * 4(sp)
     lw     t0,   4 * 4(sp)
@@ -389,48 +406,43 @@ Software_IRQHandler:
     lw     t5,  29 * 4(sp)
     lw     t6,  30 * 4(sp)
 
-    #  Restore f0 to f31 registers (FPU registers)
-    flw    f0,  32 * 4(sp)
-    flw    f1,  33 * 4(sp)
-    flw    f2,  34 * 4(sp)
-    flw    f3,  35 * 4(sp)
-    flw    f4,  36 * 4(sp)
-    flw    f5,  37 * 4(sp)
-    flw    f6,  38 * 4(sp)
-    flw    f7,  39 * 4(sp)
-    flw    f8,  40 * 4(sp)
-    flw    f9,  41 * 4(sp)
-    flw    f10, 42 * 4(sp)
-    flw    f11, 43 * 4(sp)
-    flw    f12, 44 * 4(sp)
-    flw    f13, 45 * 4(sp)
-    flw    f14, 46 * 4(sp)
-    flw    f15, 47 * 4(sp)
-    flw    f16, 48 * 4(sp)
-    flw    f17, 49 * 4(sp)
-    flw    f18, 50 * 4(sp)
-    flw    f19, 51 * 4(sp)
-    flw    f20, 52 * 4(sp)
-    flw    f21, 53 * 4(sp)
-    flw    f22, 54 * 4(sp)
-    flw    f23, 55 * 4(sp)
-    flw    f24, 56 * 4(sp)
-    flw    f25, 57 * 4(sp)
-    flw    f26, 58 * 4(sp)
-    flw    f27, 59 * 4(sp)
-    flw    f28, 60 * 4(sp)
-    flw    f29, 61 * 4(sp)
-    flw    f30, 62 * 4(sp)
-    flw    f31, 63 * 4(sp)
+    #  Restore FPU registers
+    flw    ft0,  32 * 4(sp)
+    flw    ft1,  33 * 4(sp)
+    flw    ft2,  34 * 4(sp)
+    flw    ft3,  35 * 4(sp)
+    flw    ft4,  36 * 4(sp)
+    flw    ft5,  37 * 4(sp)
+    flw    ft6,  38 * 4(sp)
+    flw    ft7,  39 * 4(sp)
+    flw    ft8,  40 * 4(sp)
+    flw    ft9,  41 * 4(sp)
+    flw    ft10, 42 * 4(sp)
+    flw    ft11, 43 * 4(sp)
+    flw    fa0,  44 * 4(sp)
+    flw    fa1,   45 * 4(sp)
+    flw    fa2,  46 * 4(sp)
+    flw    fa3,  47 * 4(sp)
+    flw    fa4,  48 * 4(sp)
+    flw    fa5,  49 * 4(sp)
+    flw    fa6,  50 * 4(sp)
+    flw    fa7,  51 * 4(sp)
+    flw    fs0,  52 * 4(sp)
+    flw    fs1,  53 * 4(sp)
+    flw    fs2,  54 * 4(sp)
+    flw    fs3,  55 * 4(sp)
+    flw    fs4,  56 * 4(sp)
+    flw    fs5,  57 * 4(sp)
+    flw    fs6,  58 * 4(sp)
+    flw    fs7,  59 * 4(sp)
+    flw    fs8,  60 * 4(sp)
+    flw    fs9,  61 * 4(sp)
+    flw    fs10, 62 * 4(sp)
+    flw    fs11, 63 * 4(sp)
 
 # Compensate for the stack pointer
-    addi   sp, sp, 4 * 64
+    addi   sp, sp, 4 * 65
 
-# Exception return will restore remaining context
-    # set MPIE = 1
-    # interrupts will be enabled from here onwards
-    li t0, 0x80
-    csrrs zero, mstatus, t0   
     mret
 
 #********************************************************************************************************
