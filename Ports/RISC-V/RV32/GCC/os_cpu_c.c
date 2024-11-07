@@ -101,11 +101,11 @@ void  OSIdleTaskHook (void)
 *********************************************************************************************************
 */
 
-void  OSInitHook (void)
+void OSInitHook(void)
 {
-
+    OS_CPU_ExceptStkBase = (CPU_STK*) (OSCfg_ISRStkBasePtr + OSCfg_ISRStkSize);
+    OS_CPU_ExceptStkBase = (CPU_STK*) ((CPU_STK) (OS_CPU_ExceptStkBase) & 0xFFFFFFF8);
 }
-
 
 /*
 *********************************************************************************************************
