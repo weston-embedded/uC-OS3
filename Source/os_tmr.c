@@ -1559,7 +1559,10 @@ static  void  OS_TmrCondWait (OS_TICK  timeout)
 
     if (OSTmrTaskTCB.Prio != OSTmrTaskTCB.BasePrio) {           /* Restore our original prio.                           */
         OS_TRACE_MUTEX_TASK_PRIO_DISINHERIT(&OSTmrTaskTCB, OSTmrTaskTCB.Prio);
+        OS_RdyListRemove(&OSTmrTaskTCB);
         OSTmrTaskTCB.Prio          = OSTmrTaskTCB.BasePrio;
+        OS_PrioInsert(OSTmrTaskTCB.BasePrio);
+        OS_RdyListInsertHead(&OSTmrTaskTCB);
         OSPrioCur                  = OSTmrTaskTCB.BasePrio;
     }
 
