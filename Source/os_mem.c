@@ -269,7 +269,8 @@ void  *OSMemGet (OS_MEM  *p_mem,
 *                            OS_ERR_NONE               If the memory block was inserted into the partition
 *                            OS_ERR_MEM_FULL           If you are returning a memory block to an already FULL memory
 *                                                      partition (You freed more blocks than you allocated!)
-*                            OS_ERR_MEM_INVALID_P_BLK  If you passed a NULL pointer for the block to release.
+*                            OS_ERR_MEM_INVALID_P_BLK  If you passed a NULL pointer or a block that does not
+*                                                      belong to the memory partition.
 *                            OS_ERR_MEM_INVALID_P_MEM  If you passed a NULL pointer for 'p_mem'
 *                            OS_ERR_OBJ_TYPE           If 'p_mem' is not pointing at a memory partition
 *
@@ -283,6 +284,10 @@ void  OSMemPut (OS_MEM  *p_mem,
                 void    *p_blk,
                 OS_ERR  *p_err)
 {
+#if (OS_CFG_ARG_CHK_EN > 0u)
+    CPU_ADDR  p_blk_addr;
+    CPU_ADDR  p_mem_addr;
+#endif
     CPU_SR_ALLOC();
 
 
@@ -315,6 +320,19 @@ void  OSMemPut (OS_MEM  *p_mem,
     if (p_mem->Type != OS_OBJ_TYPE_MEM) {                       /* Make sure the memory block was created               */
         OS_TRACE_MEM_PUT_EXIT(OS_ERR_OBJ_TYPE);
        *p_err = OS_ERR_OBJ_TYPE;
+        return;
+    }
+#endif
+
+#if (OS_CFG_ARG_CHK_EN > 0u)
+    p_blk_addr = (CPU_ADDR)p_blk;
+    p_mem_addr = (CPU_ADDR)p_mem->AddrPtr;
+    if ((p_blk_addr < p_mem_addr) ||
+        (((p_blk_addr - p_mem_addr) % p_mem->BlkSize) != 0u) ||
+        (((p_blk_addr - p_mem_addr) / p_mem->BlkSize) >= p_mem->NbrMax)) {
+        OS_TRACE_MEM_PUT_FAILED(p_mem);
+        OS_TRACE_MEM_PUT_EXIT(OS_ERR_MEM_INVALID_P_BLK);
+       *p_err = OS_ERR_MEM_INVALID_P_BLK;
         return;
     }
 #endif
